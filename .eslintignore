@@ -1,0 +1,6 @@
+src/components/generators/*
+src/components/editors/*
+src/components/previews/*
+src/components/ui/*
+src/app/layout.tsx
+src/components/hero-header.tsx 

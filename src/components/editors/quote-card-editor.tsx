@@ -10,25 +10,9 @@ import { LinkedInPreviewGenerator } from '../generators/linkedin-preview-generat
 import { Tooltip } from '../ui/tooltip'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
-import { Separator } from '../ui/separator'
 import { Textarea } from '../ui/textarea'
 
 type QuoteFormat = 'linkedin-post' | 'linkedin-preview' | 'instagram'
-
-interface QuoteCardData {
-  name: string
-  companyTitle: string
-  companyName: string
-  quoteContent: string
-  highlightWord: string
-  image?: File
-  useAutoSize: boolean
-  fontSize: number
-}
-
-interface QuoteCardEditorProps {
-  onGenerate?: (imageUrl: string) => void;
-}
 
 interface FormData {
   quoteContent: string;
@@ -39,6 +23,10 @@ interface FormData {
   fontSize: number;
   useAutoSize: boolean;
   image?: File | null;
+}
+
+interface QuoteCardEditorProps {
+  onGenerate?: (imageUrl: string) => void;
 }
 
 const getDefaultFontSize = (format: QuoteFormat): number => {
@@ -99,7 +87,7 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
       setShouldGenerate(true)
       setIsGenerating(true)
     }
-  }, [isFormValid, formData, imagePreview, selectedFormat])
+  }, [isFormValid, isGenerating, generatedCard])
 
   // Handle format change
   const handleFormatChange = (format: QuoteFormat) => {
@@ -151,7 +139,7 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
       }, 500); // Add a small delay for better UX
       return () => clearTimeout(timeoutId);
     }
-  }, [formData.fontSize, formData.useAutoSize]);
+  }, [formData.fontSize, formData.useAutoSize, isFormValid, isGenerating]);
 
   // Effect to handle card generation
   useEffect(() => {

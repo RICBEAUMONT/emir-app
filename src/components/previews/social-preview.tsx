@@ -75,6 +75,10 @@ export function SocialPreview({
             {formattedContent.length - config.maxLength} characters
           </p>
         )}
+
+        <div className="text-sm text-gray-500 mt-2">
+          Click &apos;Generate&apos; to create your social media card
+        </div>
       </div>
     </div>
   )
