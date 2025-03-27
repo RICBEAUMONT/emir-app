@@ -1,41 +1,121 @@
-# EMIR Social Media Asset Generator
+# EMIR Content Generator
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+A modern web application for generating professional quote cards and social media content using Next.js and AI.
+
+## Overview
+
+EMIR Content Generator is a sophisticated web application that helps users create professional quote cards for social media platforms like LinkedIn and Instagram. The application features a modern, animated interface with a focus on user experience and professional design.
+
+## Features
+
+- 🎨 Professional quote card generation
+- 📱 Optimized for LinkedIn & Instagram posts
+- ✨ Animated hero section with video background
+- 🎯 Category-based content generation
+- 🖼️ Customizable quote card editor
+- 🌙 Dark mode support
+- ⚡ Fast development with Turbopack
+- 🎭 Smooth animations with Framer Motion
+
+## Tech Stack
+
+- **Framework**: Next.js 15.2.1 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
+- **Animations**: Framer Motion
+- **Development**: Turbopack
+- **Build Tools**: PostCSS, ESLint
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js app router pages
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Home page
+│   └── globals.css        # Global styles
+├── components/            # React components
+│   ├── ui/               # Reusable UI components
+│   ├── generators/       # Content generation components
+│   ├── previews/         # Preview components
+│   ├── editors/          # Editor components
+│   ├── forms/            # Form components
+│   ├── hero-header.tsx   # Animated hero section
+│   └── category-selector.tsx # Category selection
+└── lib/                  # Utility functions and shared logic
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js (Latest LTS version recommended)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/RICBEAUMONT/emir-app.git
+cd emir-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Start the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application will be available at [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+### Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Components
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Hero Header
+The application features an animated hero section with:
+- Video background with fade effects
+- Animated content transitions
+- Responsive design
+- Professional branding elements
 
-## Deploy on Vercel
+### Quote Card Editor
+A sophisticated editor component that allows users to:
+- Generate quote cards
+- Customize content
+- Preview results
+- Export for social media
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The project uses modern development practices and tools:
+- TypeScript for type safety
+- ESLint for code quality
+- Tailwind CSS for styling
+- Framer Motion for animations
+- Radix UI for accessible components
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is private and proprietary. All rights reserved.
 
 ## Quote Card Generators
 
