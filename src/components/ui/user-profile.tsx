@@ -58,7 +58,7 @@ export function UserProfile() {
   if (!user) return null
 
   return (
-    <div className="text-sm">
+    <div className="text-sm font-medium text-gray-700">
       Hello, {profile?.full_name || user.email}
     </div>
   )

@@ -9,10 +9,10 @@ export default function AuthenticatedLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex h-screen bg-black">
+    <div className="flex h-screen bg-white">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <header className="bg-black/50 backdrop-blur-sm border-b border-[#bea152]/20">
+        <header className="bg-white border-b border-gray-200">
           <div className="flex items-center justify-between px-4 py-3">
             <UserProfile />
             <div className="flex items-center space-x-4">
@@ -21,7 +21,7 @@ export default function AuthenticatedLayout({
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto bg-black/30 p-4">
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-4">
           {children}
         </main>
       </div>

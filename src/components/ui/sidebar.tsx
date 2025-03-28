@@ -11,6 +11,7 @@ import {
   BarChartIcon,
   HelpCircleIcon,
   UserCircle,
+  Bell,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -22,6 +23,7 @@ const navigation = [
   { name: 'Quote Cards', href: '/quote-cards', icon: ImageIcon },
   { name: 'Analytics', href: '/analytics', icon: BarChartIcon },
   { name: 'Users', href: '/users', icon: UsersIcon },
+  { name: 'Updates', href: '/updates', icon: Bell },
   { name: 'Settings', href: '/settings', icon: SettingsIcon },
   { name: 'Help', href: '/help', icon: HelpCircleIcon },
 ]
@@ -79,10 +81,10 @@ export default function Sidebar() {
   }, [supabase])
 
   return (
-    <div className="w-64 bg-white dark:bg-neutral-950 border-r border-neutral-200 dark:border-neutral-800 flex flex-col">
+    <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
       {/* Sidebar Header */}
-      <div className="h-16 flex items-center px-6 border-b border-neutral-200 dark:border-neutral-800">
-        <img src="/logo.png" alt="EMIR" className="h-8" />
+      <div className="h-16 flex items-center px-6 border-b border-gray-200">
+        <img src="/logo-white.png" alt="EMIR" className="h-8 brightness-0" />
       </div>
 
       {/* Navigation */}
@@ -96,8 +98,8 @@ export default function Sidebar() {
               className={cn(
                 'flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors',
                 isActive
-                  ? 'bg-neutral-100 dark:bg-neutral-800 text-foreground'
-                  : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-foreground'
+                  ? 'bg-gray-100 text-gray-900'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -109,8 +111,8 @@ export default function Sidebar() {
 
       {/* Sidebar Footer */}
       {user && (
-        <div className="p-4 border-t border-neutral-200 dark:border-neutral-800">
-          <div className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground">
+        <div className="p-4 border-t border-gray-200">
+          <div className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600">
             {profile?.avatar_url ? (
               <div className="relative h-8 w-8 rounded-full overflow-hidden">
                 <Image
@@ -121,15 +123,15 @@ export default function Sidebar() {
                 />
               </div>
             ) : (
-              <div className="h-8 w-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
-                <UserCircle className="h-6 w-6 text-neutral-500 dark:text-neutral-400" />
+              <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <UserCircle className="h-6 w-6 text-gray-400" />
               </div>
             )}
             <div className="flex-1">
-              <div className="font-medium text-foreground">
+              <div className="font-medium text-gray-900">
                 {profile?.full_name || user.email}
               </div>
-              <div className="text-xs">Admin</div>
+              <div className="text-xs text-gray-500">Admin</div>
             </div>
           </div>
         </div>
