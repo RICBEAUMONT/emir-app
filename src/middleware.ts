@@ -6,9 +6,16 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  // Check if user is authenticated
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (session) {
+    // Update last_seen_at timestamp
+    await supabase
+      .from('profiles')
+      .update({ last_seen_at: new Date().toISOString() })
+      .eq('id', session.user.id)
+  }
 
   // If user is not signed in and the current path is not /landing,
   // redirect the user to /landing
@@ -26,5 +33,14 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+  ],
 } 

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight, ImageIcon, BarChartIcon, UsersIcon } from 'lucide-react'
+import RecentUpdates from "@/components/ui/recent-updates"
 
 export default function DashboardPage() {
   return (
@@ -89,6 +90,9 @@ export default function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Recent Updates */}
+      <RecentUpdates />
     </div>
   )
 }
