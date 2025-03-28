@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   ImageIcon,
-  SettingsIcon,
   LayoutDashboardIcon,
   UsersIcon,
   BarChartIcon,
@@ -24,7 +23,6 @@ const navigation = [
   { name: 'Analytics', href: '/analytics', icon: BarChartIcon },
   { name: 'Users', href: '/users', icon: UsersIcon },
   { name: 'Updates', href: '/updates', icon: Bell },
-  { name: 'Settings', href: '/settings', icon: SettingsIcon },
   { name: 'Help', href: '/help', icon: HelpCircleIcon },
 ]
 
