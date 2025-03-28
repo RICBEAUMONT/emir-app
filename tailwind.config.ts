@@ -78,6 +78,16 @@ const config = {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0)' },
         },
+        gradient: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-2px)' },
+          '20%, 40%, 60%, 80%': { transform: 'translateX(2px)' },
+        }
       },
       animation: {
         'fade-in': 'fade-in 0.2s ease-in-out',
@@ -88,6 +98,13 @@ const config = {
         'slide-in-from-bottom': 'slide-in-from-bottom 0.2s ease-in-out',
         'slide-in-from-left': 'slide-in-from-left 0.2s ease-in-out',
         'slide-in-from-right': 'slide-in-from-right 0.2s ease-in-out',
+        gradient: 'gradient 20s ease infinite',
+        'pulse-slow': 'pulse 6s ease-in-out infinite',
+        'pulse-slower': 'pulse 8s ease-in-out infinite',
+        shake: 'shake 0.6s ease-in-out',
+      },
+      backdropBlur: {
+        xs: '2px',
       },
     },
   },
