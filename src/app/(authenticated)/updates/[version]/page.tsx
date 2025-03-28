@@ -31,7 +31,7 @@ const formatDate = (date: Date) => {
 
 const updates: Update[] = [
   {
-    version: "1.3.0",
+    version: "1.1.3",
     date: formatDate(new Date()),
     title: "User Management & Activity Tracking",
     description: "Enhanced user management system with real-time activity tracking and improved role management.",
@@ -68,33 +68,37 @@ const updates: Update[] = [
     ]
   },
   {
-    version: "1.2.0",
-    date: formatDate(new Date(Date.now() - 24 * 60 * 60 * 1000)), // Yesterday
-    title: "Updates System & Navigation Enhancement",
-    description: "Major improvements to the updates tracking system and streamlined navigation experience with comprehensive documentation features.",
+    version: "1.1.2",
+    date: formatDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)), // 7 days ago
+    title: "Updates System & Security Enhancement",
+    description: "Comprehensive updates tracking system and important security improvements.",
     type: "feature",
     changes: [
-      "Implemented detailed version history system with individual update pages",
+      "Added detailed individual update pages for each version",
       "Enhanced updates list with interactive cards and hover effects",
-      "Added comprehensive technical documentation for each update",
-      "Streamlined navigation by removing redundant items",
-      "Added type badges for different kinds of updates",
-      "Improved text contrast and readability across updates pages",
-      "Added back navigation for better user experience",
-      "Enhanced documentation structure with technical details and migration notes"
+      "Implemented version-based navigation between updates",
+      "Added two-factor authentication support",
+      "Enhanced password hashing algorithm",
+      "Implemented rate limiting for API endpoints",
+      "Added session management improvements",
+      "Fixed potential XSS vulnerabilities",
+      "Updated security headers configuration"
     ],
     technical_details: {
       affected_components: [
         "src/app/(authenticated)/updates/[version]/page.tsx",
         "src/app/(authenticated)/updates/page.tsx",
         "src/components/ui/updates-widget.tsx",
-        "src/components/ui/sidebar.tsx"
+        "src/components/ui/sidebar.tsx",
+        "src/middleware.ts",
+        "src/lib/auth.ts"
       ],
       breaking_changes: [],
       dependencies_updated: [],
       migration_notes: [
-        "Settings access moved to user profile section",
-        "Update documentation now requires more detailed technical information",
+        "Two-factor authentication requires database schema update",
+        "Rate limiting configuration added to environment variables",
+        "Security headers updated in next.config.js",
         "All changes are backwards compatible"
       ]
     },
@@ -104,31 +108,44 @@ const updates: Update[] = [
   },
   {
     version: "1.1.0",
-    date: formatDate(new Date(Date.now() - 24 * 60 * 60 * 1000)), // Yesterday
-    title: "UI Enhancement Update",
-    description: "Major improvements to the user interface and experience",
+    date: formatDate(new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)), // 14 days ago
+    title: "Performance & UI Optimization",
+    description: "Major performance improvements and UI/UX enhancements across the platform.",
     type: "enhancement",
     changes: [
-      "New light theme implementation",
-      "Enhanced login page design",
-      "Improved navigation experience",
-      "Added remember me functionality",
-      "Updates tracking system"
+      "Optimized database queries for faster data loading",
+      "Improved caching mechanism for frequently accessed data",
+      "Fixed memory leaks in long-running sessions",
+      "Enhanced error handling and logging",
+      "Reduced bundle size for faster initial load",
+      "Implemented lazy loading for heavy components",
+      "Fixed UI rendering issues in dark mode",
+      "Improved form validation feedback",
+      "Enhanced mobile responsiveness",
+      "Added loading states for better feedback",
+      "Fixed alignment issues in tables",
+      "Improved error message clarity",
+      "Added tooltips for better feature discovery"
     ],
     technical_details: {
       affected_components: [
         "src/app/layout.tsx",
         "src/app/(authenticated)/layout.tsx",
         "src/app/landing/page.tsx",
-        "src/components/ui/*"
+        "src/components/ui/*",
+        "src/lib/db.ts",
+        "src/lib/cache.ts"
       ],
-      breaking_changes: [
-        "Dark theme removed in favor of light theme"
+      breaking_changes: [],
+      dependencies_updated: [
+        { name: "next", version: "14.1.0" },
+        { name: "react", version: "18.2.0" }
       ],
-      dependencies_updated: [],
       migration_notes: [
-        "Remove any dark theme specific styles",
-        "Update text colors to use new black/opacity system"
+        "New caching configuration required",
+        "Database indexes added for performance",
+        "Bundle optimization requires no manual changes",
+        "All changes are backwards compatible"
       ]
     },
     contributors: [
@@ -137,7 +154,7 @@ const updates: Update[] = [
   },
   {
     version: "1.0.0",
-    date: formatDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)), // 2 days ago
+    date: formatDate(new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)), // 21 days ago
     title: "Initial Release",
     type: "initial",
     description: "First release of EMIR - Social Media Asset Manager",
