@@ -22,57 +22,33 @@ interface Update {
 
 const updates: Update[] = [
   {
-    version: "1.2.1",
-    date: "2024-03-22",
-    title: "Navigation Simplification",
-    description: "Streamlined the navigation by removing redundant items and enhanced the updates documentation system.",
-    type: "enhancement",
-    changes: [
-      "Removed Settings from main navigation",
-      "Enhanced update details page with comprehensive technical information",
-      "Added type badges for different kinds of updates",
-      "Improved documentation structure with technical details and migration notes"
-    ],
-    technical_details: {
-      affected_components: [
-        "src/components/ui/sidebar.tsx",
-        "src/app/(authenticated)/updates/[version]/page.tsx"
-      ],
-      breaking_changes: [],
-      dependencies_updated: [],
-      migration_notes: [
-        "Settings access moved to user profile section",
-        "Update documentation now requires more detailed technical information"
-      ]
-    },
-    contributors: [
-      "Ricardo Beaumont"
-    ]
-  },
-  {
     version: "1.2.0",
     date: "2024-03-22",
-    title: "Updates System Enhancement",
-    description: "Implemented a comprehensive updates tracking system with detailed version history pages and improved navigation.",
+    title: "Updates System & Navigation Enhancement",
+    description: "Major improvements to the updates tracking system and streamlined navigation experience with comprehensive documentation features.",
     type: "feature",
     changes: [
-      "Added detailed individual update pages for each version",
+      "Implemented detailed version history system with individual update pages",
       "Enhanced updates list with interactive cards and hover effects",
-      "Implemented version-based navigation between updates",
-      "Added 'more changes' preview functionality",
+      "Added comprehensive technical documentation for each update",
+      "Streamlined navigation by removing redundant items",
+      "Added type badges for different kinds of updates",
       "Improved text contrast and readability across updates pages",
-      "Added back navigation for better user experience"
+      "Added back navigation for better user experience",
+      "Enhanced documentation structure with technical details and migration notes"
     ],
     technical_details: {
       affected_components: [
         "src/app/(authenticated)/updates/[version]/page.tsx",
         "src/app/(authenticated)/updates/page.tsx",
-        "src/components/ui/updates-widget.tsx"
+        "src/components/ui/updates-widget.tsx",
+        "src/components/ui/sidebar.tsx"
       ],
       breaking_changes: [],
       dependencies_updated: [],
       migration_notes: [
-        "No migration required for this update",
+        "Settings access moved to user profile section",
+        "Update documentation now requires more detailed technical information",
         "All changes are backwards compatible"
       ]
     },
