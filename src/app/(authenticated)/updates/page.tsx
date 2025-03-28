@@ -12,37 +12,72 @@ interface Update {
   changes: string[]
 }
 
+// Function to format date
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
 const updates: Update[] = [
   {
-    version: "1.2.0",
-    date: "2024-03-22",
-    title: "Updates System Enhancement",
-    description: "Implemented a comprehensive updates tracking system with detailed version history pages and improved navigation.",
+    version: "1.1.3",
+    date: formatDate(new Date()),
+    title: "User Management & Activity Tracking",
+    description: "Enhanced user management system with real-time activity tracking and improved role management.",
+    changes: [
+      "Added real-time user activity tracking with last seen timestamps",
+      "Implemented user roles with visual badges (admin, moderator, user)",
+      "Enhanced user profile pages with activity statistics",
+      "Added middleware for automatic activity tracking",
+      "Improved user list with search functionality",
+      "Added profile images support with fallback icons",
+      "Implemented proper date formatting across the platform"
+    ]
+  },
+  {
+    version: "1.1.2",
+    date: formatDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)), // 7 days ago
+    title: "Updates System & Security Enhancement",
+    description: "Comprehensive updates tracking system and important security improvements.",
     changes: [
       "Added detailed individual update pages for each version",
       "Enhanced updates list with interactive cards and hover effects",
       "Implemented version-based navigation between updates",
-      "Added 'more changes' preview functionality",
-      "Improved text contrast and readability across updates pages",
-      "Added back navigation for better user experience"
+      "Added two-factor authentication support",
+      "Enhanced password hashing algorithm",
+      "Implemented rate limiting for API endpoints",
+      "Added session management improvements",
+      "Fixed potential XSS vulnerabilities",
+      "Updated security headers configuration"
     ]
   },
   {
     version: "1.1.0",
-    date: "2024-03-21",
-    title: "UI Enhancement Update",
-    description: "Major improvements to the user interface and experience",
+    date: formatDate(new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)), // 14 days ago
+    title: "Performance & UI Optimization",
+    description: "Major performance improvements and UI/UX enhancements across the platform.",
     changes: [
-      "New light theme implementation",
-      "Enhanced login page design",
-      "Improved navigation experience",
-      "Added remember me functionality",
-      "Updates tracking system"
+      "Optimized database queries for faster data loading",
+      "Improved caching mechanism for frequently accessed data",
+      "Fixed memory leaks in long-running sessions",
+      "Enhanced error handling and logging",
+      "Reduced bundle size for faster initial load",
+      "Implemented lazy loading for heavy components",
+      "Fixed UI rendering issues in dark mode",
+      "Improved form validation feedback",
+      "Enhanced mobile responsiveness",
+      "Added loading states for better feedback",
+      "Fixed alignment issues in tables",
+      "Improved error message clarity",
+      "Added tooltips for better feature discovery"
     ]
   },
   {
     version: "1.0.0",
-    date: "2024-03-20",
+    date: formatDate(new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)), // 21 days ago
     title: "Initial Release",
     description: "First release of EMIR - Social Media Asset Manager",
     changes: [

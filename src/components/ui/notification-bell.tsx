@@ -10,11 +10,20 @@ interface Update {
   title: string
 }
 
+// Function to format date
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
 // Get the most recent update from our updates data
 const getLatestUpdate = (): Update => ({
-  version: "1.2.0",
-  date: "2024-03-22",
-  title: "Updates System & Navigation Enhancement"
+  version: "1.3.0",
+  date: formatDate(new Date()),
+  title: "User Management & Activity Tracking"
 })
 
 export function NotificationBell() {

@@ -10,19 +10,28 @@ interface Update {
   description: string
 }
 
+// Function to format date
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
 // Get recent updates from our updates data
 const getRecentUpdates = (): Update[] => [
   {
-    version: "1.2.0",
-    date: "2024-03-22",
-    title: "Updates System & Navigation Enhancement",
-    description: "Added a new updates system with detailed version history and improved navigation with a new sidebar."
+    version: "1.3.0",
+    date: formatDate(new Date()),
+    title: "User Management & Activity Tracking",
+    description: "Enhanced user management system with real-time activity tracking and improved role management."
   },
   {
-    version: "1.1.0",
-    date: "2024-03-21",
-    title: "User Management & Profile Features",
-    description: "Enhanced user management with improved profile features and settings."
+    version: "1.2.0",
+    date: formatDate(new Date(Date.now() - 24 * 60 * 60 * 1000)), // Yesterday
+    title: "Updates System & Navigation Enhancement",
+    description: "Implemented a comprehensive updates tracking system with detailed version history and improved navigation."
   }
 ]
 

@@ -20,10 +20,56 @@ interface Update {
   type: 'feature' | 'enhancement' | 'bugfix' | 'initial'
 }
 
+// Function to format date
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
 const updates: Update[] = [
   {
+    version: "1.3.0",
+    date: formatDate(new Date()),
+    title: "User Management & Activity Tracking",
+    description: "Enhanced user management system with real-time activity tracking and improved role management.",
+    type: "feature",
+    changes: [
+      "Added real-time user activity tracking with last seen timestamps",
+      "Implemented user roles with visual badges (admin, moderator, user)",
+      "Enhanced user profile pages with activity statistics",
+      "Added middleware for automatic activity tracking",
+      "Improved user list with search functionality",
+      "Added profile images support with fallback icons",
+      "Implemented proper date formatting across the platform"
+    ],
+    technical_details: {
+      affected_components: [
+        "src/app/(authenticated)/users/page.tsx",
+        "src/app/(authenticated)/users/[id]/page.tsx",
+        "src/middleware.ts",
+        "src/components/ui/notification-bell.tsx",
+        "src/app/(authenticated)/updates/page.tsx",
+        "src/app/(authenticated)/updates/[version]/page.tsx"
+      ],
+      breaking_changes: [],
+      dependencies_updated: [],
+      migration_notes: [
+        "New last_seen_at column added to profiles table",
+        "Role column added to profiles table with default value 'user'",
+        "Activity tracking middleware requires no configuration",
+        "All changes are backwards compatible"
+      ]
+    },
+    contributors: [
+      "Ricardo Beaumont"
+    ]
+  },
+  {
     version: "1.2.0",
-    date: "2024-03-22",
+    date: formatDate(new Date(Date.now() - 24 * 60 * 60 * 1000)), // Yesterday
     title: "Updates System & Navigation Enhancement",
     description: "Major improvements to the updates tracking system and streamlined navigation experience with comprehensive documentation features.",
     type: "feature",
@@ -58,7 +104,7 @@ const updates: Update[] = [
   },
   {
     version: "1.1.0",
-    date: "2024-03-21",
+    date: formatDate(new Date(Date.now() - 24 * 60 * 60 * 1000)), // Yesterday
     title: "UI Enhancement Update",
     description: "Major improvements to the user interface and experience",
     type: "enhancement",
@@ -91,7 +137,7 @@ const updates: Update[] = [
   },
   {
     version: "1.0.0",
-    date: "2024-03-20",
+    date: formatDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)), // 2 days ago
     title: "Initial Release",
     type: "initial",
     description: "First release of EMIR - Social Media Asset Manager",
