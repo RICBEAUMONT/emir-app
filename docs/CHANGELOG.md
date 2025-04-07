@@ -2,6 +2,24 @@
 
 All notable changes to the EMIR platform will be documented in this file.
 
+## [1.1.4] - 2024-04-07
+### Added
+- User deletion functionality for admins and moderators
+- Role selection during user creation
+- Enhanced permission checks for user management
+- Improved error handling and user feedback
+
+### Changed
+- Updated Supabase integration to use @supabase/ssr
+- Optimized user profile page for better performance
+- Improved error messages and UI feedback
+- Enhanced security checks for user management actions
+
+### Fixed
+- Resolved issues with user profile page when cards table is missing
+- Fixed deprecated auth-helpers usage in API routes
+- Improved error handling for failed user operations
+
 ## [1.1.3] - 2024-03-28
 ### Added
 - Real-time user activity tracking with last seen timestamps

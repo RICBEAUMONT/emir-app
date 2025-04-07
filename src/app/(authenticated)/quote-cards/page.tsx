@@ -16,7 +16,7 @@ export default function QuoteCardsPage() {
       </div>
 
       {/* Quote Card Editor */}
-      <div className="bg-white dark:bg-neutral-950 p-6 rounded-lg border border-neutral-200 dark:border-neutral-800">
+      <div className="bg-white dark:bg-neutral-950 p-6 rounded-lg border border-gray-200 dark:border-neutral-800">
         <QuoteCardEditor onGenerate={(imageUrl: string) => {
           console.log('Generated image URL:', imageUrl)
         }} />
