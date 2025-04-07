@@ -80,6 +80,12 @@ export default function UserProfilePage({ params }: UserProfileProps) {
   )
 
   useEffect(() => {
+    // If the ID is "new", we should handle it differently
+    if (params.id === 'new') {
+      window.location.href = '/users/create'
+      return
+    }
+
     async function fetchUser() {
       try {
         // First, check if we have a session
