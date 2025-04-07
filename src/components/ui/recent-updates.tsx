@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { updates } from '@/lib/updates'
 
 interface Update {
   version: string
@@ -20,20 +21,9 @@ const formatDate = (date: Date) => {
 }
 
 // Get recent updates from our updates data
-const getRecentUpdates = (): Update[] => [
-  {
-    version: "1.3.0",
-    date: formatDate(new Date()),
-    title: "User Management & Activity Tracking",
-    description: "Enhanced user management system with real-time activity tracking and improved role management."
-  },
-  {
-    version: "1.2.0",
-    date: formatDate(new Date(Date.now() - 24 * 60 * 60 * 1000)), // Yesterday
-    title: "Updates System & Navigation Enhancement",
-    description: "Implemented a comprehensive updates tracking system with detailed version history and improved navigation."
-  }
-]
+const getRecentUpdates = () => {
+  return updates.slice(0, 2) // Get the two most recent updates
+}
 
 const RecentUpdates = () => {
   const recentUpdates = getRecentUpdates()

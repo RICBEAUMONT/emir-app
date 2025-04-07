@@ -252,10 +252,10 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
     <div className="container mx-auto py-6 px-4 md:px-6 max-w-7xl">
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-black">
             Format
             <Tooltip content="Select the social media platform and format for your quote card">
-              <Info className="h-4 w-4 text-muted-foreground" />
+              <Info className="h-4 w-4 text-gray-500" />
             </Tooltip>
           </CardTitle>
         </CardHeader>
@@ -264,24 +264,36 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
             <Button
               type="button"
               onClick={() => handleFormatChange('linkedin-post')}
-              variant={selectedFormat === 'linkedin-post' ? 'default' : 'outline'}
-              className="flex-1 min-w-[200px]"
+              variant="outline"
+              className={`flex-1 min-w-[200px] transition-colors ${
+                selectedFormat === 'linkedin-post' 
+                  ? 'bg-[#bea152] text-white border-[#bea152] hover:bg-[#bea152] hover:text-white hover:border-[#bea152]' 
+                  : 'border-gray-200 text-gray-500 hover:bg-black hover:text-white hover:border-black'
+              }`}
             >
               LinkedIn Post (1920×1080)
             </Button>
             <Button
               type="button"
               onClick={() => handleFormatChange('linkedin-preview')}
-              variant={selectedFormat === 'linkedin-preview' ? 'default' : 'outline'}
-              className="flex-1 min-w-[200px]"
+              variant="outline"
+              className={`flex-1 min-w-[200px] transition-colors ${
+                selectedFormat === 'linkedin-preview' 
+                  ? 'bg-[#bea152] text-white border-[#bea152] hover:bg-[#bea152] hover:text-white hover:border-[#bea152]' 
+                  : 'border-gray-200 text-gray-500 hover:bg-black hover:text-white hover:border-black'
+              }`}
             >
               LinkedIn Preview (1200×628)
             </Button>
             <Button
               type="button"
               onClick={() => handleFormatChange('instagram')}
-              variant={selectedFormat === 'instagram' ? 'default' : 'outline'}
-              className="flex-1 min-w-[200px]"
+              variant="outline"
+              className={`flex-1 min-w-[200px] transition-colors ${
+                selectedFormat === 'instagram' 
+                  ? 'bg-[#bea152] text-white border-[#bea152] hover:bg-[#bea152] hover:text-white hover:border-[#bea152]' 
+                  : 'border-gray-200 text-gray-500 hover:bg-black hover:text-white hover:border-black'
+              }`}
             >
               Instagram (1080×1350)
             </Button>

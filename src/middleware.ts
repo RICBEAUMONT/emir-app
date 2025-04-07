@@ -39,9 +39,9 @@ export async function middleware(req: NextRequest) {
   }
 
   // If user is signed in and the current path is /landing,
-  // redirect the user to /dashboard
+  // redirect the user to the root dashboard
   if (session && req.nextUrl.pathname === '/landing') {
-    return NextResponse.redirect(new URL('/dashboard', req.url))
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
   return res

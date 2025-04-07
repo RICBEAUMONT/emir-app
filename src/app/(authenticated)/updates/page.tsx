@@ -1,94 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-
-interface Update {
-  version: string
-  date: string
-  title: string
-  description: string
-  changes: string[]
-}
-
-// Function to format date
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
-const updates: Update[] = [
-  {
-    version: "1.1.3",
-    date: formatDate(new Date()),
-    title: "User Management & Activity Tracking",
-    description: "Enhanced user management system with real-time activity tracking and improved role management.",
-    changes: [
-      "Added real-time user activity tracking with last seen timestamps",
-      "Implemented user roles with visual badges (admin, moderator, user)",
-      "Enhanced user profile pages with activity statistics",
-      "Added middleware for automatic activity tracking",
-      "Improved user list with search functionality",
-      "Added profile images support with fallback icons",
-      "Implemented proper date formatting across the platform"
-    ]
-  },
-  {
-    version: "1.1.2",
-    date: formatDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)), // 7 days ago
-    title: "Updates System & Security Enhancement",
-    description: "Comprehensive updates tracking system and important security improvements.",
-    changes: [
-      "Added detailed individual update pages for each version",
-      "Enhanced updates list with interactive cards and hover effects",
-      "Implemented version-based navigation between updates",
-      "Added two-factor authentication support",
-      "Enhanced password hashing algorithm",
-      "Implemented rate limiting for API endpoints",
-      "Added session management improvements",
-      "Fixed potential XSS vulnerabilities",
-      "Updated security headers configuration"
-    ]
-  },
-  {
-    version: "1.1.0",
-    date: formatDate(new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)), // 14 days ago
-    title: "Performance & UI Optimization",
-    description: "Major performance improvements and UI/UX enhancements across the platform.",
-    changes: [
-      "Optimized database queries for faster data loading",
-      "Improved caching mechanism for frequently accessed data",
-      "Fixed memory leaks in long-running sessions",
-      "Enhanced error handling and logging",
-      "Reduced bundle size for faster initial load",
-      "Implemented lazy loading for heavy components",
-      "Fixed UI rendering issues in dark mode",
-      "Improved form validation feedback",
-      "Enhanced mobile responsiveness",
-      "Added loading states for better feedback",
-      "Fixed alignment issues in tables",
-      "Improved error message clarity",
-      "Added tooltips for better feature discovery"
-    ]
-  },
-  {
-    version: "1.0.0",
-    date: formatDate(new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)), // 21 days ago
-    title: "Initial Release",
-    description: "First release of EMIR - Social Media Asset Manager",
-    changes: [
-      "User authentication and authorization",
-      "Dashboard layout and navigation",
-      "Quote cards creation interface",
-      "User management system",
-      "Profile settings"
-    ]
-  }
-].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+import { updates } from '@/lib/updates'
 
 export default function UpdatesPage() {
   return (
@@ -99,7 +13,7 @@ export default function UpdatesPage() {
       </div>
 
       <div className="space-y-6">
-        {updates.map((update, index) => (
+        {updates.map((update) => (
           <Link
             key={update.version}
             href={`/updates/${update.version}`}
