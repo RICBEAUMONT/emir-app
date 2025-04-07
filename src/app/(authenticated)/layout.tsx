@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import { usePathname } from 'next/navigation'
 import Sidebar from "@/components/ui/sidebar"
 import { UserProfile } from "@/components/ui/user-profile"
@@ -11,7 +11,10 @@ import { NotificationBell } from "@/components/ui/notification-bell"
 
 // Activity tracker component
 function ActivityTracker() {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
   const pathname = usePathname()
 
   useEffect(() => {

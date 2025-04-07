@@ -2,7 +2,7 @@
 
 import { Search, UserCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -23,7 +23,10 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   // Function to determine if a user is active (active in last 5 minutes)
   const isUserActive = (lastSeenAt: string | null) => {

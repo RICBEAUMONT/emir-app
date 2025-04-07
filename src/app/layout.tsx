@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/ui/sidebar";
 import { UserProfile } from "@/components/ui/user-profile";
 import { SettingsButton } from "@/components/ui/settings-button";
 import { SignOutButton } from "@/components/ui/sign-out-button";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "EMIR",
@@ -19,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background font-sans antialiased">
         {children}
       </body>
     </html>
