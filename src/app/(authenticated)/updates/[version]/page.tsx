@@ -179,6 +179,52 @@ const updates: Update[] = [
     contributors: [
       "Ricardo Beaumont"
     ]
+  },
+  {
+    version: "unreleased",
+    date: formatDate(new Date()),
+    title: "Supabase Client Migration & Bug Fixes",
+    description: "Updated Supabase client implementation and fixed various issues.",
+    type: "enhancement",
+    changes: [
+      "Migrated from @supabase/auth-helpers-nextjs to @supabase/ssr",
+      "Fixed font loading issues with proper format support",
+      "Resolved Turbopack-related compilation errors",
+      "Improved error handling in authentication flow",
+      "Enhanced middleware configuration",
+      "Updated environment variable handling",
+      "Fixed CSS optimization warnings"
+    ],
+    technical_details: {
+      affected_components: [
+        "src/app/(authenticated)/layout.tsx",
+        "src/app/(authenticated)/users/page.tsx",
+        "src/app/(authenticated)/users/[id]/page.tsx",
+        "src/app/(authenticated)/profile/page.tsx",
+        "src/components/ui/dashboard-stats.tsx",
+        "src/components/ui/admin-panel.tsx",
+        "src/components/ui/admin-user-info.tsx",
+        "src/components/ui/sidebar.tsx",
+        "src/components/ui/sign-out-button.tsx",
+        "src/components/ui/user-profile.tsx",
+        "src/middleware.ts",
+        "src/app/globals.css",
+        "next.config.js"
+      ],
+      breaking_changes: [],
+      dependencies_updated: [
+        { name: "@supabase/ssr", version: "latest" }
+      ],
+      migration_notes: [
+        "Supabase client initialization now requires explicit URL and anon key",
+        "All authentication helpers have been updated to use the new package",
+        "No database schema changes required",
+        "Changes are backwards compatible"
+      ]
+    },
+    contributors: [
+      "Ricardo Beaumont"
+    ]
   }
 ]
 
