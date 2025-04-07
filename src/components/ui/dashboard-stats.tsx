@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import { ImageIcon, UsersIcon, BarChartIcon, TrendingUpIcon, ClockIcon } from 'lucide-react'
 
 interface DashboardStats {
@@ -21,7 +21,10 @@ export function DashboardStats() {
     averageGenerationTime: 0
   })
   const [loading, setLoading] = useState(true)
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   useEffect(() => {
     async function fetchStats() {

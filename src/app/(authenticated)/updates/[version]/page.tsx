@@ -172,7 +172,7 @@ const updates: Update[] = [
       ],
       dependencies_updated: [
         { name: "next", version: "14.1.0" },
-        { name: "@supabase/auth-helpers-nextjs", version: "latest" },
+        { name: "@supabase/ssr", version: "latest" },
         { name: "tailwindcss", version: "3.4.1" }
       ]
     },
