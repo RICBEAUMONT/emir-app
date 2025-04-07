@@ -1,18 +1,20 @@
 'use client'
 
-import { ArrowLeft, Mail, Calendar, Clock, Activity, UserCircle } from 'lucide-react'
+import { ArrowLeft, Mail, Calendar, Clock, Activity, UserCircle, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import Image from 'next/image'
+import { User } from '@supabase/supabase-js'
+import { formatDistanceToNow } from 'date-fns'
 
 interface UserProfileProps {
-  params: Promise<{
+  params: {
     id: string
-  }>
+  }
 }
 
-interface User {
+interface Profile {
   id: string
   email: string
   full_name: string | null
@@ -69,8 +71,7 @@ const formatStorageUsed = (cards: Card[]) => {
 }
 
 export default function UserProfilePage({ params }: UserProfileProps) {
-  const resolvedParams = use(params)
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const supabase = createBrowserClient(
@@ -98,7 +99,7 @@ export default function UserProfilePage({ params }: UserProfileProps) {
         const { data: profileData, error: userError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', resolvedParams.id)
+          .eq('id', params.id)
           .single()
 
         if (userError) {
@@ -115,7 +116,7 @@ export default function UserProfilePage({ params }: UserProfileProps) {
         const { data: cardsData, error: cardsError } = await supabase
           .from('cards')
           .select('*')
-          .eq('user_id', resolvedParams.id)
+          .eq('user_id', params.id)
           .order('created_at', { ascending: false })
 
         if (cardsError) {
@@ -160,7 +161,7 @@ export default function UserProfilePage({ params }: UserProfileProps) {
           table: 'profiles'
         },
         (payload) => {
-          if (payload.new.id === resolvedParams.id) {
+          if (payload.new.id === params.id) {
             setUser(prevUser => {
               if (!prevUser) return null
               return {
@@ -184,14 +185,14 @@ export default function UserProfilePage({ params }: UserProfileProps) {
           event: '*',
           schema: 'public',
           table: 'cards',
-          filter: `user_id=eq.${resolvedParams.id}`
+          filter: `user_id=eq.${params.id}`
         },
         async () => {
           // Refetch cards when changes occur
           const { data: cardsData } = await supabase
             .from('cards')
             .select('*')
-            .eq('user_id', resolvedParams.id)
+            .eq('user_id', params.id)
             .order('created_at', { ascending: false })
 
           const cards = cardsData || []
@@ -217,7 +218,7 @@ export default function UserProfilePage({ params }: UserProfileProps) {
       supabase.removeChannel(channel)
       supabase.removeChannel(cardsChannel)
     }
-  }, [resolvedParams.id, supabase])
+  }, [params.id, supabase])
 
   // Update status every minute
   useEffect(() => {
