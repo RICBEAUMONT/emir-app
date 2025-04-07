@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, UserCircle } from 'lucide-react'
+import { Search, UserCircle, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import Link from 'next/link'
@@ -23,6 +23,8 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -79,6 +81,32 @@ export default function UsersPage() {
     }
   }
 
+  const handleDeleteUser = async (userId: string) => {
+    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return
+    }
+
+    setDeleteLoading(userId)
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to delete user')
+      }
+
+      // Remove the user from the local state
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId))
+    } catch (err) {
+      console.error('Error deleting user:', err)
+      alert(err instanceof Error ? err.message : 'Failed to delete user')
+    } finally {
+      setDeleteLoading(null)
+    }
+  }
+
   useEffect(() => {
     async function fetchUsers() {
       try {
@@ -94,6 +122,20 @@ export default function UsersPage() {
           console.error('No active session')
           throw new Error('No active session')
         }
+
+        // Get current user's role
+        const { data: currentUser, error: currentUserError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single()
+
+        if (currentUserError) {
+          console.error('Error fetching current user role:', currentUserError)
+          throw new Error('Failed to fetch user role')
+        }
+
+        setCurrentUserRole(currentUser.role)
 
         // Then fetch users from the profiles table
         const { data, error: usersError } = await supabase
@@ -186,6 +228,8 @@ export default function UsersPage() {
     )
   })
 
+  const canDeleteUser = ['admin', 'moderator'].includes(currentUserRole || '')
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -211,7 +255,7 @@ export default function UsersPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
         <Link
-          href="/users/new"
+          href="/users/create"
           className="px-4 py-2 text-sm font-medium text-white bg-[#bea152] rounded-md hover:bg-[#a88f3f] transition-colors"
         >
           Add User
@@ -297,13 +341,35 @@ export default function UsersPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {user.last_active}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-4">
                     <Link
                       href={`/users/${user.id}`}
                       className="text-[#bea152] hover:text-[#a88f3f] transition-colors"
                     >
                       View Profile
                     </Link>
+                    {canDeleteUser && user.role !== 'admin' && (
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        disabled={deleteLoading === user.id}
+                        className="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {deleteLoading === user.id ? (
+                          <span className="inline-flex items-center">
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Deleting...
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center">
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Delete
+                          </span>
+                        )}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

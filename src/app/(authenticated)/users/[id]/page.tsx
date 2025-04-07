@@ -118,30 +118,15 @@ export default function UserProfilePage({ params }: UserProfileProps) {
           throw new Error('User not found')
         }
 
-        // Fetch user's cards
-        const { data: cardsData, error: cardsError } = await supabase
-          .from('cards')
-          .select('*')
-          .eq('user_id', params.id)
-          .order('created_at', { ascending: false })
-
-        if (cardsError) {
-          console.error('Error fetching cards:', cardsError)
-          throw new Error('Failed to fetch user cards')
-        }
-
-        const cards = cardsData || []
-        const lastCard = cards[0]
-
         // Transform the data to include status and activity
         const transformedUser = {
           ...profileData,
           status: isUserActive(profileData.last_seen_at) ? 'Active' : 'Inactive',
           last_active: formatLastActive(profileData.last_seen_at),
           activity: {
-            cardsGenerated: cards.length,
-            lastCardGenerated: lastCard ? new Date(lastCard.created_at).toLocaleDateString() : null,
-            storageUsed: formatStorageUsed(cards)
+            cardsGenerated: 0,
+            lastCardGenerated: null,
+            storageUsed: '0 MB'
           }
         }
 
@@ -182,47 +167,9 @@ export default function UserProfilePage({ params }: UserProfileProps) {
       )
       .subscribe()
 
-    // Set up real-time subscription for cards
-    const cardsChannel = supabase
-      .channel('user_cards')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'cards',
-          filter: `user_id=eq.${params.id}`
-        },
-        async () => {
-          // Refetch cards when changes occur
-          const { data: cardsData } = await supabase
-            .from('cards')
-            .select('*')
-            .eq('user_id', params.id)
-            .order('created_at', { ascending: false })
-
-          const cards = cardsData || []
-          const lastCard = cards[0]
-
-          setUser(prevUser => {
-            if (!prevUser) return null
-            return {
-              ...prevUser,
-              activity: {
-                cardsGenerated: cards.length,
-                lastCardGenerated: lastCard ? new Date(lastCard.created_at).toLocaleDateString() : null,
-                storageUsed: formatStorageUsed(cards)
-              }
-            }
-          })
-        }
-      )
-      .subscribe()
-
-    // Cleanup subscriptions on unmount
+    // Cleanup subscription on unmount
     return () => {
       supabase.removeChannel(channel)
-      supabase.removeChannel(cardsChannel)
     }
   }, [params.id, supabase])
 
@@ -371,7 +318,7 @@ export default function UserProfilePage({ params }: UserProfileProps) {
               <div>
                 <p className="text-sm text-gray-500">Storage Used</p>
                 <p className="text-sm font-medium text-gray-900">
-                  {user.activity?.storageUsed || '0 GB'}
+                  {user.activity?.storageUsed || '0 MB'}
                 </p>
               </div>
             </div>
