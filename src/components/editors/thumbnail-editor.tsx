@@ -19,9 +19,9 @@ export function ThumbnailEditor({ format }: ThumbnailEditorProps) {
       case 'youtube':
         return { width: 1280, height: 720 } // 16:9
       case 'rapid-fire':
-        return { width: 1200, height: 630 } // 1.91:1
+        return { width: 1080, height: 1920 } // 9:16
       case 'thought-leadership':
-        return { width: 1200, height: 675 } // 16:9
+        return { width: 1080, height: 1920 } // 9:16
       default:
         return { width: 1280, height: 720 }
     }
@@ -150,7 +150,7 @@ export function ThumbnailEditor({ format }: ThumbnailEditorProps) {
         <div className="flex items-center justify-center w-full">
           <label className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-400 rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-[#bea152] transition-colors">
             {imagePreview ? (
-              <div className="relative w-full aspect-video">
+              <div className={`relative w-full ${format === 'rapid-fire' ? 'aspect-[9/16]' : 'aspect-video'}`}>
                 <img
                   src={imagePreview}
                   alt="Preview"

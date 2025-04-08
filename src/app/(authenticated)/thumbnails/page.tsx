@@ -66,8 +66,8 @@ export default function ThumbnailsPage() {
               <h3 className="text-sm font-medium text-gray-900 mb-2">Dimensions</h3>
               <p className="text-sm text-gray-600">
                 {selectedFormat === 'youtube' && '1280 x 720 pixels (16:9)'}
-                {selectedFormat === 'rapid-fire' && '1200 x 630 pixels (1.91:1)'}
-                {selectedFormat === 'thought-leadership' && '1200 x 675 pixels (16:9)'}
+                {selectedFormat === 'rapid-fire' && '1080 x 1920 pixels (9:16)'}
+                {selectedFormat === 'thought-leadership' && '1080 x 1920 pixels (9:16)'}
               </p>
             </div>
 

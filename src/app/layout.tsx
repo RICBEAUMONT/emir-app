@@ -8,6 +8,16 @@ import { SignOutButton } from "@/components/ui/sign-out-button";
 export const metadata: Metadata = {
   title: "EMIR",
   description: "EMIR - Quote Management System",
+  icons: {
+    icon: [
+      {
+        url: '/favicon.png',
+        type: 'image/png',
+      }
+    ],
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  }
 };
 
 export default function RootLayout({
