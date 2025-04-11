@@ -43,12 +43,12 @@ export default function Landing() {
   }
 
   return (
-    <div className="w-full max-w-md p-8 rounded-lg bg-white/[0.02] backdrop-blur-lg shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/[0.05]">
+    <div className="w-full max-w-md p-8 rounded-lg bg-white shadow-lg border border-gray-200">
       <div className="text-center space-y-2 mb-10">
         <div className="flex items-center justify-center h-16">
           <Logo />
         </div>
-        <p className="text-sm text-white/60 font-medium">
+        <p className="text-sm text-gray-600 font-medium">
           Social Media Asset Manager
         </p>
       </div>
@@ -56,7 +56,7 @@ export default function Landing() {
       <form onSubmit={handleSignIn} className="space-y-5">
         <div className="space-y-5">
           <div className="relative group">
-            <label htmlFor="email" className="block text-sm font-medium text-[#bea152]/80 group-hover:text-[#bea152] transition-colors mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors mb-2">
               Email
             </label>
             <div className="relative">
@@ -67,13 +67,12 @@ export default function Landing() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="block w-full px-4 py-3
-                  bg-white/[0.03] hover:bg-white/[0.04]
-                  backdrop-blur-xl
-                  border border-white/[0.05]
+                  bg-gray-50 hover:bg-gray-100
+                  border border-gray-200
                   rounded-lg
-                  text-white 
-                  placeholder-white/30
-                  focus:bg-white/[0.05]
+                  text-gray-900 
+                  placeholder-gray-400
+                  focus:bg-white
                   focus:outline-none focus:ring-1 focus:ring-[#bea152]/50
                   focus:border-[#bea152]/50
                   transform transition-all duration-200
@@ -86,7 +85,7 @@ export default function Landing() {
             </div>
           </div>
           <div className="relative group">
-            <label htmlFor="password" className="block text-sm font-medium text-[#bea152]/80 group-hover:text-[#bea152] transition-colors mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors mb-2">
               Password
             </label>
             <div className="relative">
@@ -97,13 +96,12 @@ export default function Landing() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="block w-full px-4 py-3
-                  bg-white/[0.03] hover:bg-white/[0.04]
-                  backdrop-blur-xl
-                  border border-white/[0.05]
+                  bg-gray-50 hover:bg-gray-100
+                  border border-gray-200
                   rounded-lg
-                  text-white 
-                  placeholder-white/30
-                  focus:bg-white/[0.05]
+                  text-gray-900 
+                  placeholder-gray-400
+                  focus:bg-white
                   focus:outline-none focus:ring-1 focus:ring-[#bea152]/50
                   focus:border-[#bea152]/50
                   transform transition-all duration-200
@@ -113,7 +111,7 @@ export default function Landing() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60 focus:outline-none
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none
                   transition-colors duration-200"
               >
                 {showPassword ? (
@@ -130,10 +128,10 @@ export default function Landing() {
         </div>
 
         {error && (
-          <div className="p-3 rounded-lg bg-red-500/10 backdrop-blur-sm border border-red-500/10
+          <div className="p-3 rounded-lg bg-red-50 border border-red-200
             animate-shake"
           >
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
 
@@ -165,7 +163,7 @@ export default function Landing() {
           )}
         </button>
 
-        <div className="flex items-center justify-between pt-3 border-t border-white/[0.05]">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-200">
           <label className="flex items-center space-x-2.5 group cursor-pointer">
             <div className="relative">
               <input
@@ -174,7 +172,7 @@ export default function Landing() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-4 h-4 border border-white/10 rounded-md
+              <div className="w-4 h-4 border border-gray-300 rounded-md
                 group-hover:border-[#bea152]/30
                 peer-checked:border-[#bea152]
                 peer-checked:bg-[#bea152]
@@ -182,19 +180,19 @@ export default function Landing() {
                 shadow-sm"
               >
                 {rememberMe && (
-                  <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 )}
               </div>
             </div>
-            <span className="text-sm font-medium text-white/60 group-hover:text-white/80 transition-colors duration-200">
+            <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
               Remember me
             </span>
           </label>
           <button
             type="button"
-            className="text-sm font-medium text-[#bea152]/80 hover:text-[#bea152] 
+            className="text-sm font-medium text-[#bea152] hover:text-[#bea152]/80 
               transition-all duration-200
               hover:scale-[1.02] active:scale-[0.98]
               focus:outline-none focus:ring-2 focus:ring-[#bea152]/20 rounded-md px-2 py-1 -mr-2"

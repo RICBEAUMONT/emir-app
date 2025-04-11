@@ -5,6 +5,7 @@ import { ThumbnailEditor } from '../../../components/editors/thumbnail-editor'
 
 export default function ThumbnailsPage() {
   const [selectedFormat, setSelectedFormat] = useState<'youtube' | 'rapid-fire' | 'thought-leadership'>('youtube')
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -51,15 +52,19 @@ export default function ThumbnailsPage() {
               </button>
             </div>
 
-            <ThumbnailEditor format={selectedFormat} />
+            <ThumbnailEditor format={selectedFormat} onPreviewUpdate={setPreviewUrl} />
           </div>
         </div>
 
         <div className="w-full lg:w-1/3">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Preview</h2>
-            <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500 text-sm">Preview will appear here</p>
+            <div className={`${selectedFormat === 'youtube' ? 'aspect-video' : 'aspect-[9/16]'} bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden`}>
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
+              ) : (
+                <p className="text-gray-500 text-sm">Preview will appear here</p>
+              )}
             </div>
 
             <div className="mt-6">
