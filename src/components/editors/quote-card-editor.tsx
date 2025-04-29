@@ -81,13 +81,29 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
     imagePreview
   )
 
-  // Auto-generate when form is valid
+  // Auto-generate when form is valid or when any input changes
   useEffect(() => {
-    if (isFormValid && !isGenerating && !generatedCard) {
-      setShouldGenerate(true)
-      setIsGenerating(true)
-    }
-  }, [isFormValid, isGenerating, generatedCard])
+    if (!isFormValid || isGenerating) return;
+
+    const timeoutId = setTimeout(() => {
+      setShouldGenerate(true);
+      setIsGenerating(true);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    isFormValid,
+    isGenerating,
+    formData.quoteContent,
+    formData.highlightWord,
+    formData.name,
+    formData.companyTitle,
+    formData.companyName,
+    formData.fontSize,
+    formData.useAutoSize,
+    selectedFormat,
+    imagePreview
+  ]);
 
   // Handle format change
   const handleFormatChange = (format: QuoteFormat) => {
@@ -96,10 +112,6 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
       ...prev,
       fontSize: getDefaultFontSize(format)
     }))
-    // Reset generation state when format changes
-    setGeneratedCard(null)
-    setShouldGenerate(false)
-    setIsGenerating(false)
   }
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -107,39 +119,13 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
     if (file) {
       setFormData({ ...formData, image: file })
       setImagePreview(URL.createObjectURL(file))
-      // Reset generation state when image changes
-      setGeneratedCard(null)
-      setShouldGenerate(false)
-      setIsGenerating(false)
     }
   }
 
-  // Update form data with auto-generation reset
+  // Update form data
   const updateFormData = (updates: Partial<FormData>) => {
-    setFormData(prev => {
-      const newData = { ...prev, ...updates };
-      // Only trigger regeneration if it's not a typography change
-      const isTypographyChange = 'fontSize' in updates || 'useAutoSize' in updates;
-      if (!isTypographyChange) {
-        setGeneratedCard(null);
-        setShouldGenerate(false);
-        setIsGenerating(false);
-      }
-      return newData;
-    });
+    setFormData(prev => ({ ...prev, ...updates }));
   }
-
-  // Add a new effect specifically for typography changes
-  useEffect(() => {
-    if (isFormValid && !isGenerating) {
-      const timeoutId = setTimeout(() => {
-        setGeneratedCard(null);
-        setShouldGenerate(true);
-        setIsGenerating(true);
-      }, 500); // Add a small delay for better UX
-      return () => clearTimeout(timeoutId);
-    }
-  }, [formData.fontSize, formData.useAutoSize, isFormValid, isGenerating]);
 
   // Effect to handle card generation
   useEffect(() => {
@@ -470,10 +456,13 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
                       e.preventDefault();
                       updateFormData({ useAutoSize: !formData.useAutoSize });
                     }}
-                    className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-muted data-[state=checked]:bg-primary"
-                    data-state={formData.useAutoSize ? 'checked' : 'unchecked'}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+                      formData.useAutoSize ? 'bg-[#bea152]' : 'bg-gray-200'
+                    }`}
                   >
-                    <span className="absolute left-[2px] h-5 w-5 rounded-full bg-white transition-transform data-[state=checked]:translate-x-6" data-state={formData.useAutoSize ? 'checked' : 'unchecked'} />
+                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform ${
+                      formData.useAutoSize ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
                   </button>
                 </div>
 
@@ -521,17 +510,6 @@ export function QuoteCardEditor({ onGenerate }: QuoteCardEditorProps) {
                   Download Quote Card
                 </Button>
               )}
-              <Button
-                type="button"
-                onClick={() => {
-                  setGeneratedCard(null)
-                  setShouldGenerate(true)
-                  setIsGenerating(true)
-                }}
-                disabled={!isFormValid || isGenerating}
-              >
-                Regenerate
-              </Button>
             </div>
           </CardContent>
         </Card>

@@ -25,6 +25,77 @@ const formatDate = (date: Date) => {
 
 export const updates: Update[] = [
   {
+    version: "1.1.1",
+    date: formatDate(new Date()),
+    title: "Quote Card Generator Improvements",
+    description: "Enhanced quote card generator with improved auto-text sizing and real-time preview.",
+    type: 'enhancement' as const,
+    changes: [
+      "Fixed auto-text size feature functionality",
+      "Implemented real-time preview updates",
+      "Removed unnecessary regeneration controls",
+      "Fixed switch component visibility in typography settings",
+      "Improved generation performance and reduced flickering",
+      "Enhanced user experience with automatic updates"
+    ],
+    technical_details: {
+      affected_components: [
+        "QuoteCardEditor component",
+        "Typography controls",
+        "Preview generation system"
+      ]
+    }
+  },
+  {
+    version: "1.1.0",
+    date: formatDate(new Date()),
+    title: "Thumbnail Generator & UI Improvements",
+    description: "Added new thumbnail generation feature and enhanced login page design.",
+    type: 'feature' as const,
+    changes: [
+      "Implemented AI-powered thumbnail generator for social media content",
+      "Added customizable thumbnail templates and styles",
+      "Integrated image generation and editing capabilities",
+      "Updated login page background to clean white design",
+      "Implemented Miller Banner Bold font for EMIR branding",
+      "Improved visual hierarchy and spacing in login form",
+      "Enhanced overall login page readability",
+      "Updated form input styles for better visibility",
+      "Maintained brand consistency with gold accent colors"
+    ],
+    technical_details: {
+      affected_components: [
+        "Thumbnail Generator component",
+        "Image processing service",
+        "Login page",
+        "Logo component",
+        "Authentication layout"
+      ]
+    }
+  },
+  {
+    version: "1.0.6",
+    date: formatDate(new Date()),
+    title: "Login Page Redesign",
+    description: "Enhanced login page with improved visual design and brand consistency.",
+    type: 'enhancement' as const,
+    changes: [
+      "Updated login page background to clean white design",
+      "Implemented Miller Banner Bold font for EMIR branding",
+      "Improved visual hierarchy and spacing in login form",
+      "Enhanced overall login page readability",
+      "Updated form input styles for better visibility",
+      "Maintained brand consistency with gold accent colors"
+    ],
+    technical_details: {
+      affected_components: [
+        "Login page",
+        "Logo component",
+        "Authentication layout"
+      ]
+    }
+  },
+  {
     version: "1.0.5",
     date: formatDate(new Date()),
     title: "Dashboard & Updates Enhancement",
