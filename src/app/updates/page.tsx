@@ -45,42 +45,27 @@ export default function UpdatesPage() {
   }
 
   const groupUpdatesByDate = (updates: GitUpdate[]) => {
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000)
-    const thisWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-    const thisMonth = new Date(today.getFullYear(), now.getMonth(), 1)
-    const lastMonth = new Date(today.getFullYear(), now.getMonth() - 1, 1)
-
-    const groups: { [key: string]: GitUpdate[] } = {
-      'Today': [],
-      'Yesterday': [],
-      'This Week': [],
-      'This Month': [],
-      'Last Month': [],
-      'Older': []
-    }
+    const groups: { [key: string]: GitUpdate[] } = {}
 
     updates.forEach(update => {
       const updateDate = new Date(update.date)
+      const dateKey = updateDate.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })
       
-      if (updateDate >= today) {
-        groups['Today'].push(update)
-      } else if (updateDate >= yesterday) {
-        groups['Yesterday'].push(update)
-      } else if (updateDate >= thisWeek) {
-        groups['This Week'].push(update)
-      } else if (updateDate >= thisMonth) {
-        groups['This Month'].push(update)
-      } else if (updateDate >= lastMonth) {
-        groups['Last Month'].push(update)
-      } else {
-        groups['Older'].push(update)
+      if (!groups[dateKey]) {
+        groups[dateKey] = []
       }
+      groups[dateKey].push(update)
     })
 
-    // Remove empty groups
-    return Object.entries(groups).filter(([_, updates]) => updates.length > 0)
+    // Sort groups by date (newest first)
+    return Object.entries(groups).sort(([dateA], [dateB]) => {
+      return new Date(dateB).getTime() - new Date(dateA).getTime()
+    })
   }
 
   return (
