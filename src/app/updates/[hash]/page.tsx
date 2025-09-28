@@ -36,9 +36,9 @@ export default function UpdatePage() {
   // Show loading state
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <p>Loading update details...</p>
+      <div className="text-center py-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <p className="text-gray-500">Loading update details...</p>
         </div>
       </div>
     )
@@ -85,7 +85,7 @@ export default function UpdatePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div>
       <Link
         href="/updates"
         className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-6"
