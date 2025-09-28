@@ -65,8 +65,8 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
           const scale = targetWidth / img.width
           const scaledHeight = img.height * scale
 
-          // Position image on the right side
-          const x = canvas.width - targetWidth - 50 // 50px padding from right (moved further to the right)
+          // Position image on the left side
+          const x = 50 // 50px padding from left
           const y = (canvas.height - scaledHeight) / 2 + 50 // Move down by 50px (increased from 30px)
           
           ctx.drawImage(
