@@ -30,12 +30,24 @@ export function DashboardStats() {
     async function fetchStats() {
       try {
         // Fetch card statistics from the view
-        const { data: cardStats, error: cardError } = await supabase
+        let cardStats: any = null
+        const { data: cardStatsData, error: cardError } = await supabase
           .from('card_statistics')
           .select('*')
           .single()
 
-        if (cardError) throw cardError
+        if (cardError) {
+          console.warn('Card statistics not available:', cardError.message)
+          // Set default values if view doesn't exist or has no data
+          cardStats = {
+            total_cards: 0,
+            cards_today: 0,
+            cards_this_week: 0,
+            avg_generation_time_minutes: 0
+          }
+        } else {
+          cardStats = cardStatsData
+        }
 
         // Fetch active users count (users active in last 5 minutes)
         const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
@@ -44,17 +56,27 @@ export function DashboardStats() {
           .select('*', { count: 'exact', head: true })
           .gte('last_seen_at', fiveMinutesAgo)
 
-        if (usersError) throw usersError
+        if (usersError) {
+          console.warn('Active users count not available:', usersError.message)
+        }
 
         setStats({
-          totalCards: cardStats.total_cards || 0,
+          totalCards: cardStats?.total_cards || 0,
           activeUsers: activeUsersCount || 0,
-          cardsToday: cardStats.cards_today || 0,
-          cardsThisWeek: cardStats.cards_this_week || 0,
-          averageGenerationTime: Math.round(cardStats.avg_generation_time_minutes || 0)
+          cardsToday: cardStats?.cards_today || 0,
+          cardsThisWeek: cardStats?.cards_this_week || 0,
+          averageGenerationTime: Math.round(cardStats?.avg_generation_time_minutes || 0)
         })
       } catch (error) {
         console.error('Error fetching dashboard stats:', error)
+        // Set default values on error
+        setStats({
+          totalCards: 0,
+          activeUsers: 0,
+          cardsToday: 0,
+          cardsThisWeek: 0,
+          averageGenerationTime: 0
+        })
       } finally {
         setLoading(false)
       }
@@ -62,51 +84,14 @@ export function DashboardStats() {
 
     fetchStats()
 
-    // Set up real-time subscription for cards changes
-    const cardsChannel = supabase
-      .channel('cards_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'cards'
-        },
-        async () => {
-          // Refetch all stats when cards change
-          fetchStats()
-        }
-      )
-      .subscribe()
+    // Set up a simple refresh interval instead of real-time subscriptions
+    const refreshInterval = setInterval(() => {
+      fetchStats()
+    }, 30000) // Refresh every 30 seconds
 
-    // Set up real-time subscription for active users
-    const usersChannel = supabase
-      .channel('users_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles'
-        },
-        async () => {
-          const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
-          const { count, error } = await supabase
-            .from('profiles')
-            .select('*', { count: 'exact', head: true })
-            .gte('last_seen_at', fiveMinutesAgo)
-          
-          if (!error && count !== null) {
-            setStats(prev => ({ ...prev, activeUsers: count }))
-          }
-        }
-      )
-      .subscribe()
-
-    // Cleanup subscriptions on unmount
+    // Cleanup interval on unmount
     return () => {
-      supabase.removeChannel(cardsChannel)
-      supabase.removeChannel(usersChannel)
+      clearInterval(refreshInterval)
     }
   }, [supabase])
 

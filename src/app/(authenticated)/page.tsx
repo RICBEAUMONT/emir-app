@@ -24,7 +24,7 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link 
-          href="/cards/new"
+          href="/quote-cards"
           className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-3">
@@ -32,8 +32,8 @@ export default function DashboardPage() {
               <ImageIcon className="h-5 w-5 text-gray-600" />
             </div>
             <div>
-              <h3 className="font-medium text-black">Create New Card</h3>
-              <p className="text-sm text-black/60">Generate a new social media card</p>
+              <h3 className="font-medium text-black">Create Quote Card</h3>
+              <p className="text-sm text-black/60">Generate a new quote card</p>
             </div>
           </div>
           <ArrowRight className="h-5 w-5 text-gray-400" />
