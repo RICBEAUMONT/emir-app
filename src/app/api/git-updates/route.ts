@@ -67,6 +67,9 @@ const extractChanges = (message: string): string[] => {
 // Function to get git commits
 const getGitCommits = (limit: number = 10): GitUpdate[] => {
   try {
+    // Check if we're in a git repository
+    execSync('git status', { encoding: 'utf-8', stdio: 'pipe' })
+    
     // Get git log with format: hash|author|date|message
     const gitCommand = `git log --oneline --format="%H|%an|%ad|%s" --date=short -${limit}`
     const output = execSync(gitCommand, { encoding: 'utf-8' })
@@ -124,7 +127,9 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get('limit') || '10')
   
   try {
+    console.log('Git updates API called with limit:', limit)
     const commits = getGitCommits(limit)
+    console.log('Found commits:', commits.length)
     return NextResponse.json(commits)
   } catch (error) {
     console.error('Error in git updates API:', error)
