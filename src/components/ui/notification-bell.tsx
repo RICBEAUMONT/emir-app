@@ -9,6 +9,7 @@ export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false)
   const [latestUpdate, setLatestUpdate] = useState<GitUpdate | null>(null)
   const [loading, setLoading] = useState(true)
+  const [hasViewedLatest, setHasViewedLatest] = useState(false)
 
   useEffect(() => {
     const fetchLatestUpdate = async () => {
@@ -17,8 +18,13 @@ export function NotificationBell() {
         const updates = await getRecentUpdates(1)
         console.log('NotificationBell: Received updates:', updates)
         if (updates.length > 0) {
-          setLatestUpdate(updates[0])
-          console.log('NotificationBell: Set latest update:', updates[0])
+          const latest = updates[0]
+          setLatestUpdate(latest)
+          console.log('NotificationBell: Set latest update:', latest)
+          
+          // Check if user has viewed this update
+          const viewedHash = localStorage.getItem('lastViewedUpdate')
+          setHasViewedLatest(viewedHash === latest.hash)
         } else {
           console.log('NotificationBell: No updates found')
         }
@@ -43,6 +49,13 @@ export function NotificationBell() {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [isOpen])
 
+  const markAsViewed = () => {
+    if (latestUpdate) {
+      localStorage.setItem('lastViewedUpdate', latestUpdate.hash)
+      setHasViewedLatest(true)
+    }
+  }
+
   return (
     <div className="relative notification-dropdown">
       <button
@@ -50,7 +63,7 @@ export function NotificationBell() {
         className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
       >
         <Bell className="h-5 w-5 text-gray-600" />
-        {latestUpdate && (
+        {latestUpdate && !hasViewedLatest && (
           <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></div>
         )}
       </button>
@@ -75,14 +88,20 @@ export function NotificationBell() {
                 <Link
                   href={`/updates/${latestUpdate.hash}`}
                   className="text-sm text-[#bea152] hover:text-[#bea152]/80"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false)
+                    markAsViewed()
+                  }}
                 >
                   View Details
                 </Link>
                 <Link
                   href="/updates"
                   className="text-sm text-gray-500 hover:text-gray-900"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false)
+                    markAsViewed()
+                  }}
                 >
                   All Updates
                 </Link>
