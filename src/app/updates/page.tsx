@@ -1,13 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 import { getAllUpdates, GitUpdate } from '@/lib/git-updates'
 import { useEffect, useState } from 'react'
 
 export default function UpdatesPage() {
   const [updates, setUpdates] = useState<GitUpdate[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState<string>('all')
 
   useEffect(() => {
     const fetchUpdates = async () => {
@@ -68,11 +69,48 @@ export default function UpdatesPage() {
     })
   }
 
+  const getDateOptions = () => {
+    const groupedUpdates = groupUpdatesByDate(updates)
+    return [
+      { value: 'all', label: 'All Updates' },
+      ...groupedUpdates.map(([dateKey]) => ({
+        value: dateKey,
+        label: dateKey
+      }))
+    ]
+  }
+
+  const getFilteredUpdates = () => {
+    if (selectedDate === 'all') {
+      return groupUpdatesByDate(updates)
+    }
+    const groupedUpdates = groupUpdatesByDate(updates)
+    return groupedUpdates.filter(([dateKey]) => dateKey === selectedDate)
+  }
+
   return (
     <div>
       <div className="mb-8">
-                <h1 className="text-2xl font-semibold text-black">App Updates</h1>
-                <p className="mt-2 text-black/70">Track all updates and improvements to the platform</p>
+        <h1 className="text-2xl font-semibold text-black">App Updates</h1>
+        <p className="mt-2 text-black/70">Track all updates and improvements to the platform</p>
+        
+        {/* Date Filter Dropdown */}
+        <div className="mt-4">
+          <div className="relative">
+            <select
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#bea152] focus:border-[#bea152]"
+            >
+              {getDateOptions().map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
       </div>
 
       {loading ? (
@@ -83,7 +121,7 @@ export default function UpdatesPage() {
         </div>
       ) : (
         <div className="space-y-8">
-          {groupUpdatesByDate(updates).map(([groupName, groupUpdates]) => (
+          {getFilteredUpdates().map(([groupName, groupUpdates]) => (
             <div key={groupName}>
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">{groupName}</h2>
