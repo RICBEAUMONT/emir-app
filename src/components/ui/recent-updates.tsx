@@ -52,37 +52,30 @@ const RecentUpdates = () => {
       </div>
       
       <div className="divide-y divide-gray-100">
-        {recentUpdates.map((update, index) => (
+        {recentUpdates.slice(0, 3).map((update, index) => (
           <Link
             key={`${update.hash}-${index}`}
             href={`/updates/${update.hash}`}
             className="block p-4 hover:bg-gray-50 transition-colors"
           >
-            <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-sm font-medium text-gray-900">
-                    {update.title}
-                  </h3>
-                  <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getTypeColor(update.type)}`}>
-                    {getTypeLabel(update.type)}
-                  </span>
-                  <span className="px-2 py-0.5 text-xs font-medium text-[#bea152] bg-[#bea152]/10 rounded-full">
-                    v{update.version}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">
-                  {update.description}
+                <h3 className="text-sm font-medium text-gray-900 mb-1">
+                  {update.title}
+                </h3>
+                <p className="text-xs text-gray-500">
+                  {update.date}
                 </p>
-                <div className="flex items-center gap-4 text-xs text-gray-500">
-                  <span>{update.date}</span>
-                  <span>by {update.author}</span>
-                  <span className="font-mono">{update.hash}</span>
-                </div>
               </div>
+              <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(update.type)}`}>
+                {getTypeLabel(update.type)}
+              </span>
             </div>
           </Link>
         ))}
+        {recentUpdates.length === 0 && (
+          <p className="p-4 text-sm text-gray-500">No recent updates found.</p>
+        )}
       </div>
     </div>
   )

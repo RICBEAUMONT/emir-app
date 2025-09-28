@@ -2,23 +2,21 @@
 
 import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
-import { ImageIcon, UsersIcon, BarChartIcon, TrendingUpIcon, ClockIcon } from 'lucide-react'
+import { UsersIcon, BarChartIcon, TrendingUpIcon, ClockIcon } from 'lucide-react'
 
 interface DashboardStats {
-  totalCards: number
+  totalUsers: number
   activeUsers: number
-  cardsToday: number
-  cardsThisWeek: number
-  averageGenerationTime: number
+  totalUpdates: number
+  recentActivity: number
 }
 
 export function DashboardStats() {
   const [stats, setStats] = useState<DashboardStats>({
-    totalCards: 0,
+    totalUsers: 0,
     activeUsers: 0,
-    cardsToday: 0,
-    cardsThisWeek: 0,
-    averageGenerationTime: 0
+    totalUpdates: 0,
+    recentActivity: 0
   })
   const [loading, setLoading] = useState(true)
   const supabase = createBrowserClient(
@@ -29,24 +27,13 @@ export function DashboardStats() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        // Fetch card statistics from the view
-        let cardStats: any = null
-        const { data: cardStatsData, error: cardError } = await supabase
-          .from('card_statistics')
-          .select('*')
-          .single()
+        // Fetch total users count
+        const { count: totalUsersCount, error: totalUsersError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
 
-        if (cardError) {
-          console.warn('Card statistics not available:', cardError.message)
-          // Set default values if view doesn't exist or has no data
-          cardStats = {
-            total_cards: 0,
-            cards_today: 0,
-            cards_this_week: 0,
-            avg_generation_time_minutes: 0
-          }
-        } else {
-          cardStats = cardStatsData
+        if (totalUsersError) {
+          console.warn('Total users count not available:', totalUsersError.message)
         }
 
         // Fetch active users count (users active in last 5 minutes)
@@ -60,22 +47,43 @@ export function DashboardStats() {
           console.warn('Active users count not available:', usersError.message)
         }
 
+        // Fetch total updates from git (we'll get this from our API)
+        let totalUpdates = 0
+        try {
+          const response = await fetch('/api/git-updates')
+          if (response.ok) {
+            const updates = await response.json()
+            totalUpdates = updates.length
+          }
+        } catch (error) {
+          console.warn('Could not fetch git updates:', error)
+        }
+
+        // Calculate recent activity (users active in last hour)
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+        const { count: recentActivityCount, error: recentActivityError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .gte('last_seen_at', oneHourAgo)
+
+        if (recentActivityError) {
+          console.warn('Recent activity count not available:', recentActivityError.message)
+        }
+
         setStats({
-          totalCards: cardStats?.total_cards || 0,
+          totalUsers: totalUsersCount || 0,
           activeUsers: activeUsersCount || 0,
-          cardsToday: cardStats?.cards_today || 0,
-          cardsThisWeek: cardStats?.cards_this_week || 0,
-          averageGenerationTime: Math.round(cardStats?.avg_generation_time_minutes || 0)
+          totalUpdates: totalUpdates,
+          recentActivity: recentActivityCount || 0
         })
       } catch (error) {
         console.error('Error fetching dashboard stats:', error)
         // Set default values on error
         setStats({
-          totalCards: 0,
+          totalUsers: 0,
           activeUsers: 0,
-          cardsToday: 0,
-          cardsThisWeek: 0,
-          averageGenerationTime: 0
+          totalUpdates: 0,
+          recentActivity: 0
         })
       } finally {
         setLoading(false)
@@ -95,39 +103,25 @@ export function DashboardStats() {
     }
   }, [supabase])
 
-  const formatTime = (minutes: number) => {
-    if (minutes < 1) return 'Less than a minute'
-    if (minutes < 60) return `${minutes}m`
-    const hours = Math.floor(minutes / 60)
-    const remainingMinutes = minutes % 60
-    return `${hours}h ${remainingMinutes}m`
-  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#bea152]/5 to-[#bea152]/10 p-6 transition-all duration-300 hover:shadow-lg hover:shadow-[#bea152]/10">
         <div className="absolute inset-0 bg-gradient-to-br from-[#bea152]/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <div className="relative z-10">
           <div className="mb-4 flex items-center justify-between">
             <div className="rounded-xl bg-[#bea152]/10 p-2.5">
-              <ImageIcon className="h-5 w-5 text-[#bea152]" />
+              <UsersIcon className="h-5 w-5 text-[#bea152]" />
             </div>
-            <div className="text-sm font-medium text-[#bea152]">Total Cards</div>
+            <div className="text-sm font-medium text-[#bea152]">Total Users</div>
           </div>
           <div className="mb-4">
             <p className="text-3xl font-bold text-black">
-              {loading ? '...' : stats.totalCards.toLocaleString()}
+              {loading ? '...' : stats.totalUsers.toLocaleString()}
             </p>
           </div>
-          <div className="flex items-center gap-4 text-sm text-gray-600">
-            <span className="flex items-center gap-1.5 rounded-full bg-[#bea152]/5 px-3 py-1">
-              <TrendingUpIcon className="h-4 w-4 text-[#bea152]" />
-              {stats.cardsToday} today
-            </span>
-            <span className="flex items-center gap-1.5 rounded-full bg-[#bea152]/5 px-3 py-1">
-              <ClockIcon className="h-4 w-4 text-[#bea152]" />
-              {formatTime(stats.averageGenerationTime)}
-            </span>
+          <div className="rounded-full bg-[#bea152]/5 px-3 py-1 text-sm text-gray-600">
+            Registered users
           </div>
         </div>
       </div>
@@ -137,9 +131,9 @@ export function DashboardStats() {
         <div className="relative z-10">
           <div className="mb-4 flex items-center justify-between">
             <div className="rounded-xl bg-[#bea152]/10 p-2.5">
-              <UsersIcon className="h-5 w-5 text-[#bea152]" />
+              <TrendingUpIcon className="h-5 w-5 text-[#bea152]" />
             </div>
-            <div className="text-sm font-medium text-[#bea152]">Active Users</div>
+            <div className="text-sm font-medium text-[#bea152]">Active Now</div>
           </div>
           <div className="mb-4">
             <p className="text-3xl font-bold text-black">
@@ -159,15 +153,35 @@ export function DashboardStats() {
             <div className="rounded-xl bg-[#bea152]/10 p-2.5">
               <BarChartIcon className="h-5 w-5 text-[#bea152]" />
             </div>
-            <div className="text-sm font-medium text-[#bea152]">Weekly Activity</div>
+            <div className="text-sm font-medium text-[#bea152]">App Updates</div>
           </div>
           <div className="mb-4">
             <p className="text-3xl font-bold text-black">
-              {loading ? '...' : stats.cardsThisWeek.toLocaleString()}
+              {loading ? '...' : stats.totalUpdates.toLocaleString()}
             </p>
           </div>
           <div className="rounded-full bg-[#bea152]/5 px-3 py-1 text-sm text-gray-600">
-            This week's total
+            Total releases
+          </div>
+        </div>
+      </div>
+
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#bea152]/5 to-[#bea152]/10 p-6 transition-all duration-300 hover:shadow-lg hover:shadow-[#bea152]/10">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#bea152]/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="relative z-10">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="rounded-xl bg-[#bea152]/10 p-2.5">
+              <ClockIcon className="h-5 w-5 text-[#bea152]" />
+            </div>
+            <div className="text-sm font-medium text-[#bea152]">Recent Activity</div>
+          </div>
+          <div className="mb-4">
+            <p className="text-3xl font-bold text-black">
+              {loading ? '...' : stats.recentActivity.toLocaleString()}
+            </p>
+          </div>
+          <div className="rounded-full bg-[#bea152]/5 px-3 py-1 text-sm text-gray-600">
+            Last hour
           </div>
         </div>
       </div>

@@ -18,9 +18,44 @@
 
 @font-face {
   font-family: 'Akkurat';
-  src: url('/fonts/Akkurat-Normal.otf') format('opentype');
+  src: url('/fonts/AkkRg_Pro_1.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
+}
+
+@font-face {
+  font-family: 'Akkurat';
+  src: url('/fonts/AkkBd_Pro_1.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Akkurat';
+  src: url('/fonts/AkkIt_Pro_1.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Akkurat';
+  src: url('/fonts/AkkBdIt_Pro_1.otf') format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Akkurat';
+  src: url('/fonts/AkkLg_Pro_1.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Akkurat';
+  src: url('/fonts/AkkLgIt_Pro_1.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
 }
 
 @layer base {

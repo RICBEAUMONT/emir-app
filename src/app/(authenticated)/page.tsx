@@ -13,7 +13,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl font-semibold text-black">Dashboard</h1>
           <p className="text-sm text-black/60">
-            Overview of your content generation activities
+            Welcome to EMIR - Your content creation hub
           </p>
         </div>
       </div>
@@ -22,7 +22,7 @@ export default function DashboardPage() {
       <DashboardStats />
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Link 
           href="/quote-cards"
           className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -32,15 +32,31 @@ export default function DashboardPage() {
               <ImageIcon className="h-5 w-5 text-gray-600" />
             </div>
             <div>
-              <h3 className="font-medium text-black">Create Quote Card</h3>
-              <p className="text-sm text-black/60">Generate a new quote card</p>
+              <h3 className="font-medium text-black">Quote Cards</h3>
+              <p className="text-sm text-black/60">Create social media quote cards</p>
             </div>
           </div>
           <ArrowRight className="h-5 w-5 text-gray-400" />
         </Link>
 
         <Link 
-          href="/analytics"
+          href="/thumbnails"
+          className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gray-50 rounded-lg">
+              <ImageIcon className="h-5 w-5 text-gray-600" />
+            </div>
+            <div>
+              <h3 className="font-medium text-black">Thumbnails</h3>
+              <p className="text-sm text-black/60">Create YouTube thumbnails</p>
+            </div>
+          </div>
+          <ArrowRight className="h-5 w-5 text-gray-400" />
+        </Link>
+
+        <Link 
+          href="/email-signatures"
           className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-3">
@@ -48,8 +64,8 @@ export default function DashboardPage() {
               <BarChartIcon className="h-5 w-5 text-gray-600" />
             </div>
             <div>
-              <h3 className="font-medium text-black">View Analytics</h3>
-              <p className="text-sm text-black/60">Check your performance metrics</p>
+              <h3 className="font-medium text-black">Email Signatures</h3>
+              <p className="text-sm text-black/60">Generate professional signatures</p>
             </div>
           </div>
           <ArrowRight className="h-5 w-5 text-gray-400" />

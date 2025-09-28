@@ -6,15 +6,17 @@ import { ImageIcon, Type, X } from 'lucide-react'
 interface ThumbnailEditorProps {
   format: 'youtube' | 'rapid-fire' | 'thought-leadership'
   onPreviewUpdate?: (previewUrl: string) => void
+  onTitleUpdate?: (title: string) => void
 }
 
-export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProps) {
+export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: ThumbnailEditorProps) {
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
   const [image, setImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null)
 
   const getDimensions = () => {
     switch (format) {
@@ -63,13 +65,13 @@ export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProp
       await new Promise((resolve) => {
         img.onload = () => {
           // Calculate dimensions to fit image on the right side
-          const targetWidth = canvas.width * 0.5 // 50% of canvas width
+          const targetWidth = canvas.width * 0.65 // 65% of canvas width (increased from 60%)
           const scale = targetWidth / img.width
           const scaledHeight = img.height * scale
 
           // Position image on the right side
-          const x = canvas.width - targetWidth - 40 // 40px padding from right
-          const y = (canvas.height - scaledHeight) / 2
+          const x = canvas.width - targetWidth - 2 // 2px padding from right (moved slightly more to the right)
+          const y = (canvas.height - scaledHeight) / 2 + 50 // Move down by 50px (increased from 30px)
           
           ctx.drawImage(
             img,
@@ -116,26 +118,27 @@ export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProp
 
       // Draw black box in top left for "SUCCESSFUL PERSPECTIVES"
       ctx.fillStyle = '#231f20'
-      const boxWidth = 613
+      const boxWidth = 620
       const boxHeight = 215
-      const boxX = 72  // Left margin
-      const boxY = 182 // Top margin
+      const boxX = 70  // Left margin
+      const boxY = 144 // Top margin
       ctx.fillRect(boxX, boxY, boxWidth, boxHeight)
 
       // Draw "SUCCESSFUL PERSPECTIVES" text
       const perspectivesText = "SUCCESSFUL\nPERSPECTIVES"
       const perspectivesLines = perspectivesText.split('\n')
       const fontSize = Math.floor(boxHeight * 0.3) // Adjust font size to fit box
-      ctx.font = `bold ${fontSize}px "Akkurat Bold", Akkurat-Bold, sans-serif`
+      ctx.font = `bold ${fontSize}px "Akkurat", sans-serif`
       ctx.fillStyle = '#FFFFFF'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
 
       // Calculate center of box with new position
       const boxCenterX = boxX + (boxWidth / 2)
+      const boxCenterY = boxY + (boxHeight / 2) + 10 // Move down by 10px
       const lineHeight = fontSize * 1.2
       const totalTextHeight = lineHeight * perspectivesLines.length
-      const startY = boxY + (boxHeight - totalTextHeight) / 2 + fontSize / 2
+      const startY = boxCenterY - (totalTextHeight / 2) + fontSize / 2
 
       // Draw each line of text centered
       perspectivesLines.forEach((line, index) => {
@@ -143,53 +146,61 @@ export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProp
         ctx.fillText(line.toUpperCase(), boxCenterX, y)
       })
 
-      // Draw title (left-aligned)
-      const titleSize = Math.floor(canvas.height * 0.12)
-      ctx.font = `bold ${titleSize}px Inter, sans-serif`
-      ctx.fillStyle = '#FFFFFF'
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'middle'
-
-      // Word wrap title
-      const words = title.split(' ')
-      let lines = []
-      let currentLine = ''
-      const maxWidth = canvas.width * 0.45 // 45% of canvas width
-      const leftPadding = 60 // Padding from left edge
-
-      for (const word of words) {
-        const testLine = currentLine ? `${currentLine} ${word}` : word
-        const metrics = ctx.measureText(testLine)
-        if (metrics.width > maxWidth && currentLine !== '') {
-          lines.push(currentLine)
-          currentLine = word
-        } else {
-          currentLine = testLine
-        }
-      }
-      if (currentLine) {
-        lines.push(currentLine)
-      }
-
-      // Draw title lines
-      const titleY = canvas.height * 0.4
-      lines.forEach((line, index) => {
-        const y = titleY + (index - lines.length/2) * titleSize * 1.2
-        ctx.fillText(line, leftPadding, y)
-      })
-
       // Draw gold bar at bottom
-      const barHeight = canvas.height * 0.15
+      const goldBarWidth = 870
+      const barHeight = 125
+      const rightPadding = 70
+      const bottomPadding = 22
+      const goldBarX = canvas.width - goldBarWidth - rightPadding // Position with 70px padding from right
       ctx.fillStyle = '#bea152'
-      ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight)
+      ctx.fillRect(goldBarX, canvas.height - barHeight - bottomPadding, goldBarWidth, barHeight)
+
+        // Draw title in center of gold bar
+        if (title) {
+          const titleSize = 58 // 58pt font size
+          ctx.font = `600 ${titleSize}px "Akkurat", sans-serif`
+          ctx.fillStyle = '#211e28'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.letterSpacing = '-30px'
+          
+          // Center the title in the gold bar
+          const titleX = goldBarX + goldBarWidth / 2
+          const titleY = canvas.height - barHeight / 2 - bottomPadding - 15 // Move up by 15px
+          
+          ctx.fillText(title, titleX, titleY)
+        }
+
+      // Draw grey bar (smaller, separate bar)
+      const greyBarWidth = 280
+      const greyLeftPadding = 70
+      const greyBarX = greyLeftPadding // Position with 70px padding from left
+      ctx.fillStyle = '#231f20' // Same color as "SUCCESSFUL PERSPECTIVES" box
+      ctx.fillRect(greyBarX, canvas.height - barHeight - bottomPadding, greyBarWidth, barHeight)
+
+      // Draw EMIR logo in center of grey bar
+      if (logoImage) {
+        const logoWidth = 230
+        const logoHeight = (logoImage.height / logoImage.width) * logoWidth // Maintain aspect ratio
+        const logoX = greyBarX + (greyBarWidth - logoWidth) / 2 // Center horizontally in grey bar
+        const logoY = canvas.height - barHeight - bottomPadding + (barHeight - logoHeight) / 2 // Center vertically in grey bar
+        
+        ctx.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight)
+      }
 
       // Draw subtitle in gold bar
       if (subtitle) {
-        const subtitleSize = Math.floor(barHeight * 0.4)
-        ctx.font = `${subtitleSize}px Inter, sans-serif`
+        const subtitleSize = 20 // 20pt font size
+        ctx.font = `${subtitleSize}px "Akkurat", sans-serif`
         ctx.fillStyle = '#FFFFFF'
-        ctx.textAlign = 'left'
-        ctx.fillText(subtitle, leftPadding, canvas.height - barHeight/2)
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        
+        // Center the subtitle in the gold bar, positioned below the title
+        const subtitleX = goldBarX + goldBarWidth / 2
+        const subtitleY = canvas.height - barHeight / 2 - bottomPadding + 30 // Move down slightly more
+        
+        ctx.fillText(subtitle, subtitleX, subtitleY)
       }
     } else {
       // Original handling for other formats
@@ -239,9 +250,24 @@ export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProp
     onPreviewUpdate?.(canvas.toDataURL('image/png'))
   }
 
+  // Load EMIR logo
+  useEffect(() => {
+    const img = new Image()
+    img.onload = () => {
+      setLogoImage(img)
+    }
+    img.src = '/emir-logo-white.png'
+  }, [])
+
   useEffect(() => {
     updatePreview()
-  }, [title, subtitle, imagePreview, format])
+    onTitleUpdate?.(title)
+  }, [title, subtitle, imagePreview, format, logoImage])
+
+  // Update preview immediately when component mounts
+  useEffect(() => {
+    updatePreview()
+  }, [])
 
   const generateThumbnail = async () => {
     if (!canvasRef.current || !image) return
@@ -384,12 +410,13 @@ export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProp
           Background Image
         </h3>
         <div className="flex items-center justify-center w-full">
-          <label className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-400 rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-[#bea152] transition-colors">
+          <div className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-400 rounded-lg border-2 border-dashed border-gray-300 hover:border-[#bea152] transition-colors">
             {imagePreview ? (
               <div 
                 className={`relative w-full ${format === 'rapid-fire' ? 'aspect-[9/16]' : 'aspect-video'}`}
                 onClick={(e) => {
                   e.preventDefault()
+                  e.stopPropagation()
                   setShowPreviewModal(true)
                 }}
               >
@@ -402,16 +429,20 @@ export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProp
             ) : (
               <>
                 <ImageIcon className="h-8 w-8 mb-2" />
-                <span className="text-sm">Click to upload background image</span>
               </>
             )}
-            <input
-              type="file"
-              className="hidden"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-          </label>
+            <label className="cursor-pointer">
+              <span className="text-sm text-[#bea152] hover:text-[#bea152]/80 mt-2">
+                {imagePreview ? 'Click to change image' : 'Click to upload background image'}
+              </span>
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+            </label>
+          </div>
         </div>
       </div>
 
@@ -424,7 +455,7 @@ export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProp
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Title
+              Name
             </label>
             <input
               type="text"
@@ -436,7 +467,7 @@ export function ThumbnailEditor({ format, onPreviewUpdate }: ThumbnailEditorProp
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subtitle
+              Title & Company Name
             </label>
             <input
               type="text"

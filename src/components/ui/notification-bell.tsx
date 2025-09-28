@@ -3,11 +3,21 @@
 import { useState, useEffect } from 'react'
 import { Bell } from 'lucide-react'
 import Link from 'next/link'
-import { updates } from '@/lib/updates'
+import { getRecentUpdates, GitUpdate } from '@/lib/git-updates'
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false)
-  const latestUpdate = updates[0] // Get the most recent update
+  const [latestUpdate, setLatestUpdate] = useState<GitUpdate | null>(null)
+
+  useEffect(() => {
+    const fetchLatestUpdate = async () => {
+      const updates = await getRecentUpdates(1)
+      if (updates.length > 0) {
+        setLatestUpdate(updates[0])
+      }
+    }
+    fetchLatestUpdate()
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -32,30 +42,45 @@ export function NotificationBell() {
 
       {isOpen && (
         <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-900">Latest Update</h3>
-            <span className="px-2 py-1 text-xs font-medium text-[#bea152] bg-[#bea152]/10 rounded-full">
-              v{latestUpdate.version}
-            </span>
-          </div>
-          <p className="text-sm text-gray-600 mb-2">{latestUpdate.title}</p>
-          <p className="text-xs text-gray-500 mb-3">{latestUpdate.description}</p>
-          <div className="flex justify-between items-center">
-            <Link
-              href={`/updates/${latestUpdate.version}`}
-              className="text-sm text-[#bea152] hover:text-[#bea152]/80"
-              onClick={() => setIsOpen(false)}
-            >
-              View Details
-            </Link>
-            <Link
-              href="/updates"
-              className="text-sm text-gray-500 hover:text-gray-900"
-              onClick={() => setIsOpen(false)}
-            >
-              All Updates
-            </Link>
-          </div>
+          {latestUpdate ? (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-gray-900">Latest Update</h3>
+                <span className="px-2 py-1 text-xs font-medium text-[#bea152] bg-[#bea152]/10 rounded-full">
+                  v{latestUpdate.version}
+                </span>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">{latestUpdate.title}</p>
+              <p className="text-xs text-gray-500 mb-3">{latestUpdate.description}</p>
+              <div className="flex justify-between items-center">
+                <Link
+                  href={`/updates/${latestUpdate.hash}`}
+                  className="text-sm text-[#bea152] hover:text-[#bea152]/80"
+                  onClick={() => setIsOpen(false)}
+                >
+                  View Details
+                </Link>
+                <Link
+                  href="/updates"
+                  className="text-sm text-gray-500 hover:text-gray-900"
+                  onClick={() => setIsOpen(false)}
+                >
+                  All Updates
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-sm text-gray-500">No updates available</p>
+              <Link
+                href="/updates"
+                className="text-sm text-[#bea152] hover:text-[#bea152]/80 mt-2 inline-block"
+                onClick={() => setIsOpen(false)}
+              >
+                View All Updates
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>
