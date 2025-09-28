@@ -55,7 +55,7 @@ const RecentUpdates = () => {
         {recentUpdates.map((update, index) => (
           <Link
             key={`${update.hash}-${index}`}
-            href={`/updates/${update.version}`}
+            href={`/updates/${update.hash}`}
             className="block p-4 hover:bg-gray-50 transition-colors"
           >
             <div className="flex items-start justify-between gap-2">

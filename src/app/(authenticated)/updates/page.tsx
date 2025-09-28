@@ -47,7 +47,7 @@ export default function UpdatesPage() {
         {updates.map((update, index) => (
           <Link
             key={`${update.hash}-${index}`}
-            href={`/updates/${update.version}`}
+            href={`/updates/${update.hash}`}
             className="block group"
           >
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:border-[#bea152]/20 hover:shadow-md">

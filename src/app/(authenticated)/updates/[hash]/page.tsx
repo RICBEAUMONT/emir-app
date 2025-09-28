@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 
 export default function UpdatePage() {
   const params = useParams()
-  const version = params.version as string
+  const hash = params.hash as string
   const [updates, setUpdates] = useState<GitUpdate[]>([])
   const [update, setUpdate] = useState<GitUpdate | null>(null)
   
@@ -17,12 +17,12 @@ export default function UpdatePage() {
       const allUpdates = await getAllUpdates()
       setUpdates(allUpdates)
       
-      // Find the specific update
-      const foundUpdate = allUpdates.find(u => u.version === version)
+      // Find the specific update by hash
+      const foundUpdate = allUpdates.find(u => u.hash === hash)
       setUpdate(foundUpdate || null)
     }
     fetchUpdates()
-  }, [version])
+  }, [hash])
 
   // If update not found, show 404
   if (!update) {
