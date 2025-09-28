@@ -11,24 +11,38 @@ export default function UpdatePage() {
   const hash = params.hash as string
   const [updates, setUpdates] = useState<GitUpdate[]>([])
   const [update, setUpdate] = useState<GitUpdate | null>(null)
+  const [loading, setLoading] = useState(true)
   
   useEffect(() => {
     const fetchUpdates = async () => {
-      console.log('Fetching updates for hash:', hash)
-      const allUpdates = await getAllUpdates()
-      console.log('All updates:', allUpdates.length)
-      console.log('Looking for hash:', hash)
-      console.log('Available hashes:', allUpdates.map(u => u.hash))
-      
-      setUpdates(allUpdates)
-      
-      // Find the specific update by hash
-      const foundUpdate = allUpdates.find(u => u.hash === hash)
-      console.log('Found update:', foundUpdate)
-      setUpdate(foundUpdate || null)
+      try {
+        setLoading(true)
+        const allUpdates = await getAllUpdates()
+        setUpdates(allUpdates)
+        
+        // Find the specific update by hash
+        const foundUpdate = allUpdates.find(u => u.hash === hash)
+        setUpdate(foundUpdate || null)
+      } catch (error) {
+        console.error('Error fetching updates:', error)
+        setUpdate(null)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchUpdates()
   }, [hash])
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <p>Loading update details...</p>
+        </div>
+      </div>
+    )
+  }
 
   // If update not found, show 404
   if (!update) {
