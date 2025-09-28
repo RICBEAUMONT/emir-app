@@ -2,9 +2,37 @@
 
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { updates } from '@/lib/updates'
+import { getAllUpdates, GitUpdate } from '@/lib/git-updates'
+import { useEffect, useState } from 'react'
 
 export default function UpdatesPage() {
+  const [updates, setUpdates] = useState<GitUpdate[]>([])
+
+  useEffect(() => {
+    const allUpdates = getAllUpdates()
+    setUpdates(allUpdates)
+  }, [])
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'feature': return 'bg-blue-100 text-blue-800'
+      case 'bugfix': return 'bg-red-100 text-red-800'
+      case 'enhancement': return 'bg-green-100 text-green-800'
+      case 'initial': return 'bg-purple-100 text-purple-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'feature': return 'Feature'
+      case 'bugfix': return 'Bug Fix'
+      case 'enhancement': return 'Enhancement'
+      case 'initial': return 'Initial'
+      default: return 'Update'
+    }
+  }
+
   return (
     <div>
       <div className="mb-8">
@@ -13,23 +41,29 @@ export default function UpdatesPage() {
       </div>
 
       <div className="space-y-6">
-        {updates.map((update) => (
+        {updates.map((update, index) => (
           <Link
-            key={update.version}
+            key={`${update.hash}-${index}`}
             href={`/updates/${update.version}`}
             className="block group"
           >
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:border-[#bea152]/20 hover:shadow-md">
               <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
                     <h2 className="text-lg font-semibold text-black group-hover:text-[#bea152] transition-colors">
                       {update.title}
                     </h2>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(update.type)}`}>
+                      {getTypeLabel(update.type)}
+                    </span>
                     <ArrowRight className="h-4 w-4 text-black/30 transition-transform group-hover:translate-x-0.5 group-hover:text-[#bea152]" />
                   </div>
-                  <p className="mt-1 text-sm text-black/60">
-                    Version {update.version} • {update.date}
+                  <p className="text-sm text-black/60 mb-2">
+                    Version {update.version} • {update.date} • by {update.author}
+                  </p>
+                  <p className="text-xs text-gray-500 font-mono">
+                    Commit: {update.hash}
                   </p>
                 </div>
                 <span className="px-3 py-1 text-xs font-medium text-[#bea152] bg-[#bea152]/10 rounded-full">
@@ -66,4 +100,4 @@ export default function UpdatesPage() {
       </div>
     </div>
   )
-} 
+}

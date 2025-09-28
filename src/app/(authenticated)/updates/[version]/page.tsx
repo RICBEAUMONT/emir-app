@@ -2,22 +2,31 @@
 
 import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Code2, FileCode2, Users2, AlertCircle } from 'lucide-react'
-import { updates, type Update } from '@/lib/updates'
+import { ArrowLeft, Code2, FileCode2, Users2, AlertCircle, GitCommit } from 'lucide-react'
+import { getAllUpdates, GitUpdate } from '@/lib/git-updates'
+import { useEffect, useState } from 'react'
 
 export default function UpdatePage() {
   const params = useParams()
   const version = params.version as string
+  const [updates, setUpdates] = useState<GitUpdate[]>([])
+  const [update, setUpdate] = useState<GitUpdate | null>(null)
   
-  // Find the specific update
-  const update = updates.find(u => u.version === version)
-  
+  useEffect(() => {
+    const allUpdates = getAllUpdates()
+    setUpdates(allUpdates)
+    
+    // Find the specific update
+    const foundUpdate = allUpdates.find(u => u.version === version)
+    setUpdate(foundUpdate || null)
+  }, [version])
+
   // If update not found, show 404
   if (!update) {
     notFound()
   }
 
-  const getTypeIcon = (type: Update['type']) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
       case 'feature':
         return <FileCode2 className="h-5 w-5" />
@@ -29,6 +38,26 @@ export default function UpdatePage() {
         return <Users2 className="h-5 w-5" />
       default:
         return <Code2 className="h-5 w-5" />
+    }
+  }
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'feature': return 'bg-blue-100 text-blue-800'
+      case 'bugfix': return 'bg-red-100 text-red-800'
+      case 'enhancement': return 'bg-green-100 text-green-800'
+      case 'initial': return 'bg-purple-100 text-purple-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'feature': return 'Feature'
+      case 'bugfix': return 'Bug Fix'
+      case 'enhancement': return 'Enhancement'
+      case 'initial': return 'Initial'
+      default: return 'Update'
     }
   }
 
@@ -47,13 +76,16 @@ export default function UpdatePage() {
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">{update.title}</h1>
             <p className="text-sm text-gray-500 mt-1">
-              Version {update.version} • {update.date}
+              Version {update.version} • {update.date} • by {update.author}
+            </p>
+            <p className="text-xs text-gray-400 font-mono mt-1">
+              Commit: {update.hash}
             </p>
           </div>
           <div className="flex items-center gap-2">
             {getTypeIcon(update.type)}
-            <span className="px-2 py-1 text-xs font-medium text-[#bea152] bg-[#bea152]/10 rounded-full">
-              {update.type.charAt(0).toUpperCase() + update.type.slice(1)}
+            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(update.type)}`}>
+              {getTypeLabel(update.type)}
             </span>
           </div>
         </div>
@@ -73,73 +105,32 @@ export default function UpdatePage() {
             </ul>
           </div>
 
-          {update.technical_details && (
-            <>
-              {update.technical_details.affected_components && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900 mb-3">Affected Components</h2>
-                  <ul className="space-y-1">
-                    {update.technical_details.affected_components.map((component, index) => (
-                      <li key={index} className="text-gray-600">{component}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {update.technical_details.breaking_changes && update.technical_details.breaking_changes.length > 0 && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900 mb-3">Breaking Changes</h2>
-                  <ul className="space-y-1">
-                    {update.technical_details.breaking_changes.map((change, index) => (
-                      <li key={index} className="text-gray-600">{change}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {update.technical_details.dependencies_updated && update.technical_details.dependencies_updated.length > 0 && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900 mb-3">Dependencies Updated</h2>
-                  <ul className="space-y-1">
-                    {update.technical_details.dependencies_updated.map((dep, index) => (
-                      <li key={index} className="text-gray-600">
-                        {dep.name} → {dep.version}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {update.technical_details.migration_notes && update.technical_details.migration_notes.length > 0 && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900 mb-3">Migration Notes</h2>
-                  <ul className="space-y-1">
-                    {update.technical_details.migration_notes.map((note, index) => (
-                      <li key={index} className="text-gray-600">{note}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </>
-          )}
-
-          {update.contributors && (
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-3">Contributors</h2>
-              <div className="flex flex-wrap gap-2">
-                {update.contributors.map((contributor, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 text-sm text-gray-600 bg-gray-100 rounded-full"
-                  >
-                    {contributor}
-                  </span>
-                ))}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h2 className="text-lg font-medium text-gray-900 mb-3 flex items-center gap-2">
+              <GitCommit className="h-5 w-5" />
+              Git Information
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium text-gray-700">Commit Hash:</span>
+                <p className="font-mono text-gray-600">{update.hash}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Author:</span>
+                <p className="text-gray-600">{update.author}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Date:</span>
+                <p className="text-gray-600">{update.date}</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Version:</span>
+                <p className="text-gray-600">{update.version}</p>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
   )
-} 
+}
