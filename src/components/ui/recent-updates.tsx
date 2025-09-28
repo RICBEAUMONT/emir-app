@@ -9,8 +9,11 @@ const RecentUpdates = () => {
   const [recentUpdates, setRecentUpdates] = useState<GitUpdate[]>([])
 
   useEffect(() => {
-    const updates = getRecentUpdates()
-    setRecentUpdates(updates)
+    const fetchUpdates = async () => {
+      const updates = await getRecentUpdates()
+      setRecentUpdates(updates)
+    }
+    fetchUpdates()
   }, [])
 
   const getTypeColor = (type: string) => {

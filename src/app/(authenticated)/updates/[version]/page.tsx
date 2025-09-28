@@ -13,12 +13,15 @@ export default function UpdatePage() {
   const [update, setUpdate] = useState<GitUpdate | null>(null)
   
   useEffect(() => {
-    const allUpdates = getAllUpdates()
-    setUpdates(allUpdates)
-    
-    // Find the specific update
-    const foundUpdate = allUpdates.find(u => u.version === version)
-    setUpdate(foundUpdate || null)
+    const fetchUpdates = async () => {
+      const allUpdates = await getAllUpdates()
+      setUpdates(allUpdates)
+      
+      // Find the specific update
+      const foundUpdate = allUpdates.find(u => u.version === version)
+      setUpdate(foundUpdate || null)
+    }
+    fetchUpdates()
   }, [version])
 
   // If update not found, show 404

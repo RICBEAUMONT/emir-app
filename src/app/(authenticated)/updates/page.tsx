@@ -9,8 +9,11 @@ export default function UpdatesPage() {
   const [updates, setUpdates] = useState<GitUpdate[]>([])
 
   useEffect(() => {
-    const allUpdates = getAllUpdates()
-    setUpdates(allUpdates)
+    const fetchUpdates = async () => {
+      const allUpdates = await getAllUpdates()
+      setUpdates(allUpdates)
+    }
+    fetchUpdates()
   }, [])
 
   const getTypeColor = (type: string) => {
