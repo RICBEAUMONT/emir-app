@@ -8,6 +8,7 @@ import { getRecentUpdates, GitUpdate } from '@/lib/git-updates'
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false)
   const [latestUpdate, setLatestUpdate] = useState<GitUpdate | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchLatestUpdate = async () => {
@@ -23,6 +24,8 @@ export function NotificationBell() {
         }
       } catch (error) {
         console.error('NotificationBell: Error fetching updates:', error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchLatestUpdate()
@@ -53,8 +56,12 @@ export function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
-          {latestUpdate ? (
+        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50">
+          {loading ? (
+            <div className="text-center py-4">
+              <p className="text-sm text-gray-500">Loading updates...</p>
+            </div>
+          ) : latestUpdate ? (
             <>
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-gray-900">Latest Update</h3>
