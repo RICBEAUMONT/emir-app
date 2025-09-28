@@ -35,6 +35,7 @@ const navigation: NavigationGroup[] = [
     items: [
       { name: 'Quote Cards', href: '/quote-cards' },
       { name: 'Thumbnails', href: '/thumbnails' },
+      { name: 'Email Signatures', href: '/email-signatures' },
     ]
   },
   { 
