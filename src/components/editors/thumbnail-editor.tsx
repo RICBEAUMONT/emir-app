@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { ImageIcon, Type, X } from 'lucide-react'
 
 interface ThumbnailEditorProps {
-  format: 'youtube' | 'youtube-1920x1080'
+  format: 'youtube'
   onPreviewUpdate?: (previewUrl: string) => void
   onTitleUpdate?: (title: string) => void
 }
@@ -22,8 +22,6 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
     switch (format) {
       case 'youtube':
         return { width: 1280, height: 720 } // 16:9
-      case 'youtube-1920x1080':
-        return { width: 1920, height: 1080 } // 16:9 HD
       default:
         return { width: 1280, height: 720 }
     }
@@ -56,8 +54,8 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
     ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Draw image for YouTube formats
-    if (imagePreview && (format === 'youtube' || format === 'youtube-1920x1080')) {
+    // Draw image for YouTube format
+    if (imagePreview && format === 'youtube') {
       const img = new Image()
       img.src = imagePreview
       await new Promise((resolve) => {
@@ -105,8 +103,8 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
       })
     }
 
-    if (format === 'youtube' || format === 'youtube-1920x1080') {
-      // Add semi-transparent overlay only on the left side for YouTube formats
+    if (format === 'youtube') {
+      // Add semi-transparent overlay only on the left side for YouTube
       const gradientWidth = canvas.width * 0.6
       const gradient = ctx.createLinearGradient(0, 0, gradientWidth, 0)
       gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)')
@@ -294,8 +292,8 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
             canvas.height / img.height
           )
           
-          // For YouTube formats, make the image smaller
-          if (format === 'youtube' || format === 'youtube-1920x1080') {
+          // For YouTube format, make the image smaller
+          if (format === 'youtube') {
             scale = Math.min(
               (canvas.width * 0.8) / img.width,  // 80% of canvas width
               (canvas.height * 0.8) / img.height  // 80% of canvas height
