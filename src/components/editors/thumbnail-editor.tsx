@@ -50,8 +50,11 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
     canvas.width = dimensions.width
     canvas.height = dimensions.height
 
-    // Draw black background
-    ctx.fillStyle = '#000000'
+    // Draw gradient background from bottom left (#000) to top right (#282828)
+    const gradient = ctx.createLinearGradient(0, canvas.height, canvas.width, 0)
+    gradient.addColorStop(0, '#000000') // Bottom left
+    gradient.addColorStop(1, '#282828') // Top right
+    ctx.fillStyle = gradient
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     // Draw image for YouTube format
@@ -65,8 +68,8 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
           const scale = targetWidth / img.width
           const scaledHeight = img.height * scale
 
-          // Position image on the left side
-          const x = 50 // 50px padding from left
+          // Position image on the right side
+          const x = canvas.width - targetWidth + 20 // -20px padding (extends even further beyond right edge)
           const y = (canvas.height - scaledHeight) / 2 + 50 // Move down by 50px (increased from 30px)
           
           ctx.drawImage(
@@ -276,8 +279,11 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
     canvas.width = dimensions.width
     canvas.height = dimensions.height
 
-    // Draw black background
-    ctx.fillStyle = '#000000'
+    // Draw gradient background from bottom left (#000) to top right (#282828)
+    const gradient = ctx.createLinearGradient(0, canvas.height, canvas.width, 0)
+    gradient.addColorStop(0, '#000000') // Bottom left
+    gradient.addColorStop(1, '#282828') // Top right
+    ctx.fillStyle = gradient
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     // Draw image
@@ -374,6 +380,7 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
       <canvas
         ref={canvasRef}
         className="hidden"
+        style={{ filter: 'contrast(1.2) saturate(1.1) brightness(1.05) drop-shadow(0 0 1px rgba(0,0,0,0.3))' }}
       />
 
       {/* Preview Modal */}

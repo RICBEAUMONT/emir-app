@@ -30,7 +30,10 @@ export default function ThumbnailsPage() {
 
         <div className="w-full lg:w-1/2">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Preview</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              Live Preview
+            </h2>
             <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
               {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, ImageIcon, BarChartIcon } from 'lucide-react'
+import { ArrowRight, ImageIcon, BarChartIcon, UserIcon } from 'lucide-react'
 import RecentUpdates from "@/components/ui/recent-updates"
 import { DashboardStats } from "@/components/ui/dashboard-stats"
 
@@ -22,7 +22,7 @@ export default function DashboardPage() {
       <DashboardStats />
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Link 
           href="/quote-cards"
           className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -66,6 +66,22 @@ export default function DashboardPage() {
             <div>
               <h3 className="font-medium text-black">Email Signatures</h3>
               <p className="text-sm text-black/60">Generate professional signatures</p>
+            </div>
+          </div>
+          <ArrowRight className="h-5 w-5 text-gray-400" />
+        </Link>
+
+        <Link 
+          href="/staff-profiles"
+          className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gray-50 rounded-lg">
+              <UserIcon className="h-5 w-5 text-gray-600" />
+            </div>
+            <div>
+              <h3 className="font-medium text-black">Staff Profiles</h3>
+              <p className="text-sm text-black/60">Create professional profile images</p>
             </div>
           </div>
           <ArrowRight className="h-5 w-5 text-gray-400" />
