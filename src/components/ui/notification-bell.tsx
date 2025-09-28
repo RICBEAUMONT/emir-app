@@ -11,9 +11,18 @@ export function NotificationBell() {
 
   useEffect(() => {
     const fetchLatestUpdate = async () => {
-      const updates = await getRecentUpdates(1)
-      if (updates.length > 0) {
-        setLatestUpdate(updates[0])
+      try {
+        console.log('NotificationBell: Fetching latest update...')
+        const updates = await getRecentUpdates(1)
+        console.log('NotificationBell: Received updates:', updates)
+        if (updates.length > 0) {
+          setLatestUpdate(updates[0])
+          console.log('NotificationBell: Set latest update:', updates[0])
+        } else {
+          console.log('NotificationBell: No updates found')
+        }
+      } catch (error) {
+        console.error('NotificationBell: Error fetching updates:', error)
       }
     }
     fetchLatestUpdate()
@@ -35,9 +44,12 @@ export function NotificationBell() {
     <div className="relative notification-dropdown">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+        className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
       >
         <Bell className="h-5 w-5 text-gray-600" />
+        {latestUpdate && (
+          <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></div>
+        )}
       </button>
 
       {isOpen && (
