@@ -1,108 +1,88 @@
-import { NextRequest, NextResponse } from 'next/server'
-import sharp from 'sharp'
+// app/api/thumbnails/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
 
-export async function POST(request: NextRequest) {
+export const runtime = "nodejs";           // ensure Node runtime (sharp won't run on edge)
+export const maxDuration = 60;             // optional, avoid timeouts on Vercel
+export const dynamic = "force-dynamic";    // optional, prevents caching of responses
+
+function escapeForSVG(text: string) {
+  return (text ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json()
-    const { name, subtitle, backgroundImage } = body
+    const { name, subtitle = "", backgroundImage } = await req.json();
 
-    // Validate required fields
     if (!name || !backgroundImage) {
       return NextResponse.json(
-        { error: 'Missing required fields: name and backgroundImage are required' },
+        { error: "Missing required fields: name and backgroundImage are required" },
         { status: 400 }
-      )
+      );
     }
 
-    // Sanitize input text for SVG
-    const sanitizeText = (text: string): string => {
-      return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-    }
-
-    const sanitizedName = sanitizeText(name)
-    const sanitizedSubtitle = subtitle ? sanitizeText(subtitle) : ''
-
-    // Fetch background image
-    const backgroundResponse = await fetch(backgroundImage)
-    if (!backgroundResponse.ok) {
+    // Fetch the background image (follow redirects)
+    const resp = await fetch(backgroundImage, { redirect: "follow" });
+    if (!resp.ok) {
       return NextResponse.json(
-        { error: 'Failed to fetch background image' },
+        { error: `Failed to fetch background image (${resp.status})` },
         { status: 400 }
-      )
+      );
     }
 
-    const backgroundBuffer = await backgroundResponse.arrayBuffer()
+    const ct = resp.headers.get("content-type") ?? "";
+    if (!ct.startsWith("image/")) {
+      return NextResponse.json(
+        { error: `URL is not an image. Content-Type received: ${ct}` },
+        { status: 400 }
+      );
+    }
 
-    // Create SVG overlay
-    const svgOverlay = `
-      <svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg">
-        <!-- Semi-transparent black gradient overlay -->
+    const bg = Buffer.from(await resp.arrayBuffer());
+
+    // Build overlay SVG
+    const W = 1280, H = 720;
+    const title = escapeForSVG(name);
+    const sub   = escapeForSVG(subtitle);
+
+    const svg = `
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:rgba(0,0,0,0.3);stop-opacity:1" />
-            <stop offset="100%" style="stop-color:rgba(0,0,0,0.7);stop-opacity:1" />
+          <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="black" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="black" stop-opacity="0.55"/>
           </linearGradient>
         </defs>
-        <rect width="1280" height="720" fill="url(#gradient)" />
-        
-        <!-- Centered title -->
-        <text x="640" y="300" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="72" font-weight="bold">
-          ${sanitizedName.toUpperCase()}
-        </text>
-        
-        <!-- Optional subtitle -->
-        ${sanitizedSubtitle ? `
-        <text x="640" y="380" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="36" font-weight="normal">
-          ${sanitizedSubtitle}
-        </text>
-        ` : ''}
-        
-        <!-- Bottom gold bar -->
-        <rect x="0" y="620" width="1280" height="100" fill="#bea152" />
-        
-        <!-- EMIR text in black block on left -->
-        <rect x="0" y="620" width="200" height="100" fill="black" />
-        <text x="100" y="680" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48" font-weight="bold">
-          EMIR
-        </text>
+        <rect width="100%" height="100%" fill="url(#g)"/>
+        <g font-family="Inter, Arial, sans-serif" fill="#fff" text-anchor="middle">
+          <text x="${W/2}" y="320" font-size="72" font-weight="800">${title.toUpperCase()}</text>
+          ${sub ? `<text x="${W/2}" y="390" font-size="36" font-weight="500">${sub}</text>` : ""}
+        </g>
+        <rect x="0" y="${H-120}" width="${W}" height="120" fill="#c2a24d"/>
+        <rect x="60" y="${H-120}" width="220" height="120" fill="#111"/>
+        <text x="170" y="${H-45}" font-size="64" font-weight="800" fill="#fff" text-anchor="middle">EMIR</text>
       </svg>
-    `
+    `;
 
-    // Process the image with sharp
-    const processedImage = await sharp(Buffer.from(backgroundBuffer))
-      .resize(1280, 720, {
-        fit: 'cover',
-        position: 'center'
-      })
-      .composite([
-        {
-          input: Buffer.from(svgOverlay),
-          top: 0,
-          left: 0
-        }
-      ])
+    const png = await sharp(bg)
+      .resize(W, H, { fit: "cover", position: "centre" })
+      .composite([{ input: Buffer.from(svg), top: 0, left: 0 }])
       .png()
-      .toBuffer()
+      .toBuffer();
 
-    // Return the PNG image
-    return new NextResponse(processedImage, {
-      status: 200,
-      headers: {
-        'Content-Type': 'image/png',
-        'Content-Length': processedImage.length.toString()
-      }
-    })
-
-  } catch (error) {
-    console.error('Thumbnail generation error:', error)
+    return new NextResponse(png, {
+      headers: { "Content-Type": "image/png", "Cache-Control": "no-store" }
+    });
+  } catch (e: any) {
+    console.error("Thumbnail error:", e);
     return NextResponse.json(
-      { error: 'Internal server error during thumbnail generation' },
+      { error: "failed to render thumbnail", detail: String(e?.message ?? e) },
       { status: 500 }
-    )
+    );
   }
 }
