@@ -15,7 +15,7 @@ export function NotificationBell() {
     const fetchLatestUpdate = async () => {
       try {
         console.log('NotificationBell: Fetching latest update...')
-        const updates = await getRecentUpdates(1)
+        const updates = await getRecentUpdates()
         console.log('NotificationBell: Received updates:', updates)
         if (updates.length > 0) {
           const latest = updates[0]

@@ -416,7 +416,7 @@ export function ThumbnailEditor({ format, onPreviewUpdate, onTitleUpdate }: Thum
           <div className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-400 rounded-lg border-2 border-dashed border-gray-300 hover:border-[#bea152] transition-colors">
             {imagePreview ? (
               <div 
-                className={`relative w-full ${format === 'rapid-fire' ? 'aspect-[9/16]' : 'aspect-video'}`}
+                className="relative w-full aspect-video"
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
