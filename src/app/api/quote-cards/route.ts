@@ -67,18 +67,20 @@ function convertGoogleDriveUrl(url: string): string {
   // https://drive.google.com/file/d/FILE_ID/view
   // https://drive.google.com/open?id=FILE_ID
   // https://drive.google.com/file/d/FILE_ID/preview
+  // https://drive.google.com/uc?id=FILE_ID&export=download
   
   const patterns = [
     /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
     /drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/,
-    /id=([a-zA-Z0-9_-]+)/,
+    /[?&]id=([a-zA-Z0-9_-]+)/,
   ];
 
   for (const pattern of patterns) {
     const match = url.match(pattern);
     if (match && match[1]) {
       const fileId = match[1];
-      // Convert to direct download URL
+      // Use uc?export=download for direct file access
+      // This works better for images than uc?export=view
       return `https://drive.google.com/uc?export=download&id=${fileId}`;
     }
   }
@@ -296,12 +298,12 @@ export async function POST(req: NextRequest) {
     }
     ctx.globalAlpha = 1;
 
-    // Draw quote text (using MillerBanner like client-side generator)
+    // Draw quote text (using Akkurat like client-side generator)
     const quoteText = `"${clampedQuote.toUpperCase()}"`;
     const maxQuoteWidth = 1100;
     const optimalFontSize = fontSize || 58;
     
-    ctx.font = `600 ${optimalFontSize}px MillerBanner, Arial, sans-serif`;
+    ctx.font = `600 ${optimalFontSize}px Akkurat, Arial, sans-serif`;
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
@@ -389,27 +391,83 @@ export async function POST(req: NextRequest) {
         const isImage = contentType.startsWith("image/");
         const isGoogleDrive = imageUrl.includes("drive.google.com");
         
-        // For Google Drive, we'll accept the file even if content-type isn't explicitly image/
-        // as Google Drive sometimes returns generic content types
-        if (!isImage && !isGoogleDrive) {
+        // Get image buffer - handle Google Drive specially
+        let profileBuffer: Buffer;
+        
+        // For Google Drive, try multiple URL formats if needed
+        if (!isImage && isGoogleDrive) {
+          // Try alternative download URL format
+          const fileIdMatch = imageUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+          if (fileIdMatch && fileIdMatch[1]) {
+            const fileId = fileIdMatch[1];
+            // Try uc?export=view first (better for images)
+            const altUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+            
+            try {
+              const altResp = await fetch(altUrl, {
+                redirect: "follow",
+                headers: {
+                  "User-Agent": "EMIR-Quote-Card-Generator/1.0",
+                },
+              });
+              
+              if (altResp.ok) {
+                const arrayBuffer = await altResp.arrayBuffer();
+                profileBuffer = Buffer.from(arrayBuffer);
+              } else {
+                throw new Error(`Google Drive view failed (HTTP ${altResp.status})`);
+              }
+            } catch (altError) {
+              // If view fails, try download format
+              const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+              try {
+                const downloadResp = await fetch(downloadUrl, {
+                  redirect: "follow",
+                  headers: {
+                    "User-Agent": "EMIR-Quote-Card-Generator/1.0",
+                  },
+                });
+                
+                if (downloadResp.ok) {
+                  const arrayBuffer = await downloadResp.arrayBuffer();
+                  profileBuffer = Buffer.from(arrayBuffer);
+                } else {
+                  return NextResponse.json(
+                    { error: `Failed to download from Google Drive (HTTP ${downloadResp.status})` },
+                    { status: 400 }
+                  );
+                }
+              } catch (downloadError) {
+                return NextResponse.json(
+                  { error: `Failed to download from Google Drive: ${downloadError instanceof Error ? downloadError.message : "Unknown error"}` },
+                  { status: 400 }
+                );
+              }
+            }
+          } else {
+            return NextResponse.json(
+              { error: `Invalid Google Drive URL format` },
+              { status: 400 }
+            );
+          }
+        } else if (!isImage && !isGoogleDrive) {
           return NextResponse.json(
             { error: `URL is not an image. Content-Type received: ${contentType}` },
             { status: 400 }
           );
-        }
-
-        // Get image buffer
-        let profileBuffer: Buffer;
-        try {
-          const arrayBuffer = await resp.arrayBuffer();
-          profileBuffer = Buffer.from(arrayBuffer);
-        } catch (bufferError) {
-          return NextResponse.json(
-            {
-              error: `Failed to process profile image data: ${bufferError instanceof Error ? bufferError.message : "Unknown error"}`,
-            },
-            { status: 400 }
-          );
+        } else {
+          // Regular image URL - get buffer directly
+          try {
+            const arrayBuffer = await resp.arrayBuffer();
+            profileBuffer = Buffer.from(arrayBuffer);
+          } catch (bufferError) {
+            return NextResponse.json(
+              {
+                error: `Failed to process profile image data: ${bufferError instanceof Error ? bufferError.message : "Unknown error"}`,
+              },
+              { status: 400 }
+            );
+          }
         }
 
         // Process profile image with sharp (resize, sharpen)
@@ -432,12 +490,51 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Draw EMIR logo text
-    ctx.font = "800 64px Akkurat, Arial, sans-serif";
-    ctx.fillStyle = "#FFFFFF";
-    ctx.textAlign = "right";
-    ctx.textBaseline = "bottom";
-    ctx.fillText("EMIR", W - 70, H - padding);
+    // Draw EMIR logo image
+    try {
+      const logoPath = path.join(process.cwd(), "public", "logo.png");
+      if (fs.existsSync(logoPath)) {
+        const logoImage = await loadImage(logoPath);
+        const logoWidth = 370;
+        const logoHeight = (logoImage.height * logoWidth) / logoImage.width;
+        const logoX = padding;
+        const logoY = H - padding - logoHeight - 10;
+        
+        // Draw white logo (convert colors to white)
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight);
+        
+        // Convert logo to white by manipulating pixel data
+        const imageData = ctx.getImageData(logoX, logoY, logoWidth, logoHeight);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i + 3] > 0) { // If pixel is not fully transparent
+            data[i] = 255;     // Red
+            data[i + 1] = 255; // Green
+            data[i + 2] = 255; // Blue
+            // Alpha remains unchanged
+          }
+        }
+        ctx.putImageData(imageData, logoX, logoY);
+        ctx.restore();
+      } else {
+        // Fallback to text if logo file doesn't exist
+        ctx.font = "800 64px Akkurat, Arial, sans-serif";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "bottom";
+        ctx.fillText("EMIR", padding, H - padding);
+      }
+    } catch (logoError) {
+      console.error("Error loading logo:", logoError);
+      // Fallback to text if logo loading fails
+      ctx.font = "800 64px Akkurat, Arial, sans-serif";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("EMIR", padding, H - padding);
+    }
 
     // Check for JSON debug mode
     const url = new URL(req.url);
