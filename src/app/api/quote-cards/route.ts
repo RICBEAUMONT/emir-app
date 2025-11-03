@@ -13,24 +13,39 @@ export const dynamic = "force-dynamic";
 const fontsDir = path.join(process.cwd(), "public", "fonts");
 
 // Register Akkurat fonts (using available fonts)
+// Note: node-canvas registers fonts by family name. Use the same family name
+// for all weights, and canvas will automatically select based on weight in font string
 try {
-  if (fs.existsSync(path.join(fontsDir, "AkkRg_Pro_1.otf"))) {
-    registerFont(path.join(fontsDir, "AkkRg_Pro_1.otf"), { family: "Akkurat", weight: "400" });
+  const akkRegular = path.join(fontsDir, "AkkRg_Pro_1.otf");
+  const akkBold = path.join(fontsDir, "AkkBd_Pro_1.otf");
+  const millerRoman = path.join(fontsDir, "MillerBanner-Roman.otf");
+  const millerSemibold = path.join(fontsDir, "MillerBanner-Semibold.otf");
+  
+  // Register regular weight (400)
+  if (fs.existsSync(akkRegular)) {
+    registerFont(akkRegular, { family: "Akkurat", weight: "400" });
+    console.log("Registered Akkurat Regular (400)");
   }
-  if (fs.existsSync(path.join(fontsDir, "AkkBd_Pro_1.otf"))) {
-    registerFont(path.join(fontsDir, "AkkBd_Pro_1.otf"), { family: "Akkurat", weight: "700" });
+  // Register bold weight (700) and also for weight 600
+  if (fs.existsSync(akkBold)) {
+    registerFont(akkBold, { family: "Akkurat", weight: "700" });
+    registerFont(akkBold, { family: "Akkurat", weight: "600" });
+    console.log("Registered Akkurat Bold (600/700)");
   }
-  if (fs.existsSync(path.join(fontsDir, "AkkBd_Pro_1.otf"))) {
-    registerFont(path.join(fontsDir, "AkkBd_Pro_1.otf"), { family: "Akkurat", weight: "600" });
+  // Register MillerBanner regular
+  if (fs.existsSync(millerRoman)) {
+    registerFont(millerRoman, { family: "MillerBanner" });
+    console.log("Registered MillerBanner Roman");
   }
-  if (fs.existsSync(path.join(fontsDir, "MillerBanner-Roman.otf"))) {
-    registerFont(path.join(fontsDir, "MillerBanner-Roman.otf"), { family: "MillerBanner", weight: "400" });
+  // Register MillerBanner semibold
+  if (fs.existsSync(millerSemibold)) {
+    registerFont(millerSemibold, { family: "MillerBanner" });
+    console.log("Registered MillerBanner Semibold");
   }
-  if (fs.existsSync(path.join(fontsDir, "MillerBanner-Semibold.otf"))) {
-    registerFont(path.join(fontsDir, "MillerBanner-Semibold.otf"), { family: "MillerBanner", weight: "600" });
-  }
+  console.log("All fonts registered successfully");
 } catch (error) {
-  console.warn("Warning: Could not register fonts, falling back to system fonts", error);
+  console.error("Error registering fonts:", error);
+  console.warn("Warning: Could not register fonts, falling back to system fonts");
 }
 
 // Helper to clamp text length
@@ -303,7 +318,7 @@ export async function POST(req: NextRequest) {
     const maxQuoteWidth = 1100;
     const optimalFontSize = fontSize || 58;
     
-    ctx.font = `600 ${optimalFontSize}px Akkurat, Arial, sans-serif`;
+    ctx.font = `600 ${optimalFontSize}px "Akkurat", Arial, sans-serif`;
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
@@ -339,19 +354,19 @@ export async function POST(req: NextRequest) {
 
     // Draw name
     const nameY = separatorY + 45;
-    ctx.font = "700 58px Akkurat, Arial, sans-serif";
+    ctx.font = 'bold 58px "Akkurat", Arial, sans-serif';
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText(clampedName.toUpperCase(), padding, nameY);
 
     // Draw company title
     const titleY = nameY + 65;
-    ctx.font = "400 36px Akkurat, Arial, sans-serif";
+    ctx.font = 'normal 36px "Akkurat", Arial, sans-serif';
     ctx.fillStyle = "#BEA152";
     ctx.fillText(clampedCompanyTitle.toUpperCase(), padding, titleY);
 
     // Draw company name
     const companyY = titleY + 45;
-    ctx.font = "400 36px Akkurat, Arial, sans-serif";
+    ctx.font = 'normal 36px "Akkurat", Arial, sans-serif';
     ctx.fillStyle = "#BEA152";
     ctx.fillText(clampedCompanyName.toUpperCase(), padding, companyY);
 
@@ -520,7 +535,7 @@ export async function POST(req: NextRequest) {
         ctx.restore();
       } else {
         // Fallback to text if logo file doesn't exist
-        ctx.font = "800 64px Akkurat, Arial, sans-serif";
+        ctx.font = 'bold 64px "Akkurat", Arial, sans-serif';
         ctx.fillStyle = "#FFFFFF";
         ctx.textAlign = "left";
         ctx.textBaseline = "bottom";
