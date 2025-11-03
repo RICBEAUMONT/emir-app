@@ -61,6 +61,32 @@ function wrapText(ctx: any, text: string, maxWidth: number): string[] {
   return lines;
 }
 
+// Helper to convert Google Drive URLs to direct download links
+function convertGoogleDriveUrl(url: string): string {
+  // Google Drive sharing link patterns:
+  // https://drive.google.com/file/d/FILE_ID/view
+  // https://drive.google.com/open?id=FILE_ID
+  // https://drive.google.com/file/d/FILE_ID/preview
+  
+  const patterns = [
+    /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+    /drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/,
+    /id=([a-zA-Z0-9_-]+)/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      const fileId = match[1];
+      // Convert to direct download URL
+      return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
+  }
+
+  // If no pattern matches, return original URL
+  return url;
+}
+
 // Type for request payload
 interface QuoteCardRequest {
   name: string;
@@ -270,12 +296,12 @@ export async function POST(req: NextRequest) {
     }
     ctx.globalAlpha = 1;
 
-    // Draw quote text
+    // Draw quote text (using MillerBanner like client-side generator)
     const quoteText = `"${clampedQuote.toUpperCase()}"`;
     const maxQuoteWidth = 1100;
     const optimalFontSize = fontSize || 58;
     
-    ctx.font = `600 ${optimalFontSize}px Akkurat, Arial, sans-serif`;
+    ctx.font = `600 ${optimalFontSize}px MillerBanner, Arial, sans-serif`;
     ctx.fillStyle = "#FFFFFF";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
@@ -330,10 +356,13 @@ export async function POST(req: NextRequest) {
     // Draw profile image if provided
     if (profileImage) {
       try {
+        // Convert Google Drive URLs to direct download links
+        const imageUrl = convertGoogleDriveUrl(profileImage.trim());
+        
         // Fetch profile image
         let resp: Response;
         try {
-          resp = await fetch(profileImage.trim(), {
+          resp = await fetch(imageUrl, {
             redirect: "follow",
             headers: {
               "User-Agent": "EMIR-Quote-Card-Generator/1.0",
@@ -355,9 +384,14 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        // Verify content type
+        // Verify content type (be more lenient for Google Drive which may return generic types)
         const contentType = resp.headers.get("content-type") ?? "";
-        if (!contentType.startsWith("image/")) {
+        const isImage = contentType.startsWith("image/");
+        const isGoogleDrive = imageUrl.includes("drive.google.com");
+        
+        // For Google Drive, we'll accept the file even if content-type isn't explicitly image/
+        // as Google Drive sometimes returns generic content types
+        if (!isImage && !isGoogleDrive) {
           return NextResponse.json(
             { error: `URL is not an image. Content-Type received: ${contentType}` },
             { status: 400 }
