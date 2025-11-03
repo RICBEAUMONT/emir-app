@@ -401,109 +401,122 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        // Verify content type (be more lenient for Google Drive which may return generic types)
+        // Get image buffer - handle Google Drive and regular URLs
+        let profileBuffer: Buffer;
         const contentType = resp.headers.get("content-type") ?? "";
         const isImage = contentType.startsWith("image/");
         const isGoogleDrive = imageUrl.includes("drive.google.com");
         
-        // Get image buffer - handle Google Drive specially
-        let profileBuffer: Buffer;
-        
-        // For Google Drive, handle specially - check if response is HTML or image
-        if (isGoogleDrive) {
-          const fileIdMatch = imageUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-          if (fileIdMatch && fileIdMatch[1]) {
-            const fileId = fileIdMatch[1];
-            
-            // If content-type is not image, likely HTML warning page
-            // Try uc?export=view first (better for images)
+        try {
+          // For Google Drive, check if response is actually an image
+          if (isGoogleDrive) {
+            // If not an image, try alternative URL formats
             if (!isImage) {
-              const viewUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
-              try {
-                const viewResp = await fetch(viewUrl, {
-                  redirect: "follow",
-                  headers: {
-                    "User-Agent": "EMIR-Quote-Card-Generator/1.0",
-                  },
-                });
-                
-                if (viewResp.ok) {
-                  const viewContentType = viewResp.headers.get("content-type") ?? "";
-                  if (viewContentType.startsWith("image/")) {
-                    const arrayBuffer = await viewResp.arrayBuffer();
-                    profileBuffer = Buffer.from(arrayBuffer);
-                  } else {
-                    // Try download format as fallback
-                    throw new Error("View URL did not return an image");
-                  }
-                } else {
-                  throw new Error(`View failed (HTTP ${viewResp.status})`);
+              // Extract file ID from either the converted URL or original URL
+              let fileId: string | null = null;
+              
+              // Try patterns: /file/d/FILE_ID or ?id=FILE_ID or &id=FILE_ID
+              const patterns = [
+                /\/file\/d\/([a-zA-Z0-9_-]+)/,
+                /[?&]id=([a-zA-Z0-9_-]+)/,
+                /\/open\?id=([a-zA-Z0-9_-]+)/,
+              ];
+              
+              for (const pattern of patterns) {
+                const match = imageUrl.match(pattern) || profileImage.trim().match(pattern);
+                if (match && match[1]) {
+                  fileId = match[1];
+                  break;
                 }
-              } catch (viewError) {
-                // Fallback to download URL
-                const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-                const downloadResp = await fetch(downloadUrl, {
+              }
+              
+              if (!fileId) {
+                return NextResponse.json(
+                  { error: `Invalid Google Drive URL format - could not extract file ID. URL: ${profileImage}` },
+                  { status: 400 }
+                );
+              }
+              
+              // Try uc?export=view (best for images)
+              const viewUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+              let viewResp: Response;
+              
+              try {
+                viewResp = await fetch(viewUrl, {
                   redirect: "follow",
                   headers: {
                     "User-Agent": "EMIR-Quote-Card-Generator/1.0",
                   },
                 });
-                
-                if (downloadResp.ok) {
-                  const downloadContentType = downloadResp.headers.get("content-type") ?? "";
-                  // Check if download returns image
-                  if (downloadContentType.startsWith("image/")) {
-                    const arrayBuffer = await downloadResp.arrayBuffer();
-                    profileBuffer = Buffer.from(arrayBuffer);
-                  } else {
-                    // Check if it's HTML (might need to extract redirect)
-                    const downloadText = await downloadResp.text();
-                    if (downloadText.includes("Google Drive") || downloadText.startsWith("<!DOCTYPE")) {
-                      return NextResponse.json(
-                        { error: "Google Drive file is not publicly accessible or requires confirmation" },
-                        { status: 400 }
-                      );
-                    } else {
-                      // Try to use as image anyway
-                      profileBuffer = Buffer.from(downloadText, "utf-8");
-                    }
-                  }
-                } else {
+                console.log(`Google Drive view URL response: ${viewResp.status}, content-type: ${viewResp.headers.get("content-type")}`);
+              } catch (viewError) {
+                console.log(`Google Drive view failed, trying download format:`, viewError);
+                // If view fails, try download
+                const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                viewResp = await fetch(downloadUrl, {
+                  redirect: "follow",
+                  headers: {
+                    "User-Agent": "EMIR-Quote-Card-Generator/1.0",
+                  },
+                });
+                console.log(`Google Drive download URL response: ${viewResp.status}, content-type: ${viewResp.headers.get("content-type")}`);
+              }
+              
+              if (!viewResp.ok) {
+                return NextResponse.json(
+                  { error: `Failed to fetch Google Drive image (HTTP ${viewResp.status})` },
+                  { status: 400 }
+                );
+              }
+              
+              const viewContentType = viewResp.headers.get("content-type") ?? "";
+              if (!viewContentType.startsWith("image/")) {
+                // Check if it's HTML by reading a small preview
+                const clonedResp = viewResp.clone();
+                const responsePreview = await clonedResp.text().catch(() => "");
+                if (responsePreview.includes("Google Drive") || responsePreview.includes("<!DOCTYPE") || responsePreview.includes("<html")) {
                   return NextResponse.json(
-                    { error: `Failed to download from Google Drive (HTTP ${downloadResp.status})` },
+                    { error: "Google Drive file is not publicly accessible. Please ensure the file is shared with 'Anyone with the link' and try again." },
                     { status: 400 }
                   );
                 }
+                // If not HTML, might still be an image with wrong content-type
+                console.log(`Google Drive response has non-image content-type: ${viewContentType}, but proceeding anyway`);
               }
+              
+              // Get the image buffer
+              const arrayBuffer = await viewResp.arrayBuffer();
+              if (arrayBuffer.byteLength === 0) {
+                return NextResponse.json(
+                  { error: "Google Drive returned empty response" },
+                  { status: 400 }
+                );
+              }
+              profileBuffer = Buffer.from(arrayBuffer);
+              console.log(`Successfully loaded Google Drive image: ${profileBuffer.length} bytes`);
             } else {
-              // Response is already an image
+              // Response is already an image from Google Drive
               const arrayBuffer = await resp.arrayBuffer();
               profileBuffer = Buffer.from(arrayBuffer);
             }
-          } else {
+          } else if (!isImage) {
+            // Non-Google Drive URL that's not an image
             return NextResponse.json(
-              { error: `Invalid Google Drive URL format` },
+              { error: `URL is not an image. Content-Type received: ${contentType}` },
               { status: 400 }
             );
-          }
-        } else if (!isImage) {
-          return NextResponse.json(
-            { error: `URL is not an image. Content-Type received: ${contentType}` },
-            { status: 400 }
-          );
-        } else {
-          // Regular image URL - get buffer directly
-          try {
+          } else {
+            // Regular image URL
             const arrayBuffer = await resp.arrayBuffer();
             profileBuffer = Buffer.from(arrayBuffer);
-          } catch (bufferError) {
-            return NextResponse.json(
-              {
-                error: `Failed to process profile image data: ${bufferError instanceof Error ? bufferError.message : "Unknown error"}`,
-              },
-              { status: 400 }
-            );
           }
+        } catch (bufferError) {
+          return NextResponse.json(
+            {
+              error: `Failed to process profile image data: ${bufferError instanceof Error ? bufferError.message : "Unknown error"}`,
+            },
+            { status: 400 }
+          );
         }
 
         // Process profile image with sharp (resize, sharpen)
