@@ -47,7 +47,7 @@ const defaultSignatureData: EmailSignatureData = {
   instagramUrl: '',
   youtubeUrl: 'https://www.youtube.com/@emiradvisory',
   logoUrl: 'https://www.emirintelligence.com/wp-content/uploads/2024/04/EMIR_Logo.png',
-  animatedBannerUrl: 'https://emirintelligence.imgix.net/2024/04/EMIR_Marcomms_Animated-Email-Banner_Q1-2024.gif',
+  animatedBannerUrl: 'https://www.bransol.net/emir-images/EMIR_Animated-Email-Signature_Q125.gif',
   tagline: 'For complementary insights, follow EMIR:',
   colorScheme: '#bea152'
 }
@@ -144,7 +144,7 @@ export function EmailSignatureEditor({ template, onPreviewUpdate }: EmailSignatu
             </tr>
             <tr>
                 <td style="padding-top: 20px;">
-                    <a href="https://hubs.li/Q02lv_xh0" target="_blank"><img src="${data.animatedBannerUrl}" alt="EMIR Marketing Communications Animated Email Banner Q1-2024" width="420"></a>
+                    <a href="https://hubs.li/Q02lv_xh0" target="_blank"><img src="${data.animatedBannerUrl}" alt="EMIR Animated Email Signature Q125" width="420"></a>
                 </td>
             </tr>
         </table>
@@ -340,7 +340,7 @@ export function EmailSignatureEditor({ template, onPreviewUpdate }: EmailSignatu
                     id="animatedBannerUrl"
                     type="url"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="https://emirintelligence.imgix.net/2024/04/EMIR_Marcomms_Animated-Email-Banner_Q1-2024.gif"
+                    placeholder="https://www.bransol.net/emir-images/EMIR_Animated-Email-Signature_Q125.gif"
                     value={signatureData.animatedBannerUrl}
                     onChange={(e) => updateSignatureData({ animatedBannerUrl: e.target.value })}
                   />
