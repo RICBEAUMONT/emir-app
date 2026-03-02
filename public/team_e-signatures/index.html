@@ -726,6 +726,208 @@
   footer a { color: #bea152; text-decoration: none; }
   footer a:hover { color: #e5d4a0; }
 
+  /* ── Floating support widget (premium) ── */
+  .support-widget {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 1000;
+    font-family: 'Akkurat Regular Pro', sans-serif;
+  }
+  .support-widget-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #0d0d0d;
+    color: #bea152;
+    border: 1px solid rgba(190,161,82,0.35);
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .support-widget-btn:hover {
+    transform: scale(1.04);
+    border-color: #bea152;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.22);
+  }
+  .support-widget-btn:focus {
+    outline: none;
+    border-color: #bea152;
+    box-shadow: 0 0 0 2px rgba(190,161,82,0.25);
+  }
+  .support-widget-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+  .support-widget-tooltip {
+    position: absolute;
+    bottom: 10px;
+    right: 60px;
+    padding: 10px 14px;
+    background: #0d0d0d;
+    color: rgba(255,255,255,0.9);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(4px);
+    transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  .support-widget-tooltip::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    bottom: 16px;
+    border: 6px solid transparent;
+    border-left-color: #0d0d0d;
+  }
+  .support-widget-btn:hover + .support-widget-tooltip,
+  .support-widget-btn:focus + .support-widget-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+  .support-widget.card-open .support-widget-tooltip {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .support-widget-card {
+    position: absolute;
+    bottom: 64px;
+    right: 0;
+    width: 320px;
+    background: #0d0d0d;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.03);
+    padding: 24px;
+    display: none;
+    animation: supportCardIn 0.28s ease;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .support-widget-card.open {
+    display: flex;
+  }
+  @keyframes supportCardIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .support-widget-card::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    right: 22px;
+    border: 7px solid transparent;
+    border-top-color: #0d0d0d;
+  }
+  .support-card-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .support-card-photo-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+  }
+  .support-card-photo-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: #bea152;
+    border-right-color: rgba(190,161,82,0.5);
+    border-bottom-color: #e5d4a0;
+    border-left-color: rgba(190,161,82,0.6);
+    animation: supportPhotoRingSpin 3s linear infinite;
+  }
+  @keyframes supportPhotoRingSpin {
+    to { transform: rotate(360deg); }
+  }
+  .support-card-photo {
+    position: relative;
+    z-index: 1;
+    width: 72px;
+    height: 72px;
+    margin: 4px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 1px solid rgba(190,161,82,0.25);
+    display: block;
+  }
+  .support-card-eyebrow {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: #bea152;
+    margin-bottom: 6px;
+  }
+  .support-card-name {
+    font-family: 'Miller Banner', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    margin-bottom: 4px;
+  }
+  .support-card-title {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 12px;
+  }
+  .support-card-message {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 18px;
+    letter-spacing: 0.02em;
+  }
+  .support-card-email-btn {
+    display: block;
+    width: 100%;
+    padding: 13px 18px;
+    background: #bea152;
+    color: #0d0d0d;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .support-card-email-btn:hover {
+    background: #a88b3d;
+    color: #fff;
+  }
+  @media (max-width: 640px) {
+    .support-widget { bottom: 22px; right: 22px; }
+    .support-widget-tooltip { display: none; }
+    .support-widget-card { width: calc(100vw - 44px); max-width: 320px; right: 0; }
+  }
+
   @media (max-width: 640px) {
     header { padding: 40px 24px 36px; }
     .header-logo { height: 26px; margin-bottom: 20px; }
@@ -846,7 +1048,7 @@
       <p>Go to your <strong>EMIR Gmail account</strong>. In the top-right corner of the page, click the <strong>⚙ Settings cog icon</strong> — it sits between the question mark and the 3×3 grid of dots.</p>
       <div class="img-slot">
         <span class="img-label">Screenshot · Step 02</span>
-        <img class="step-img" src="step-images/step%203.png" alt="Cog icon in Gmail's top-right toolbar" />
+        <img class="step-img" src="step-images/step-4.png" alt="Cog icon in Gmail's top-right toolbar" />
       </div>
       <p>A panel will appear on the right labelled <strong>"Quick Settings"</strong>. At the top of that panel, click:</p>
       <div class="tip-box">
@@ -855,7 +1057,7 @@
       </div>
       <div class="img-slot">
         <span class="img-label">Screenshot · Step 02b</span>
-        <img class="step-img" src="step-images/step3.1.png" alt="Quick Settings panel with See all settings highlighted" />
+        <img class="step-img" src="step-images/step-5.png" alt="See all settings — Gmail General settings page" />
       </div>
     </div>
     <div class="nav-row">
@@ -878,7 +1080,7 @@
       <p>The full Settings page will now be open. <strong>Scroll down</strong> until you reach the <strong>Signature</strong> section.</p>
       <div class="img-slot">
         <span class="img-label">Screenshot · Step 03</span>
-        <img class="step-img" src="step-images/step-4.png" alt="Gmail Settings scrolled to the Signature section" />
+        <img class="step-img" src="step-images/step-5.1.png" alt="Gmail Settings — General tab, Signature section" />
       </div>
       <p>You'll see your existing signature in the text field on the right. Before pasting the new one, this field must be emptied completely.</p>
       <div class="warn-box">
@@ -887,7 +1089,7 @@
       </div>
       <div class="img-slot">
         <span class="img-label">Screenshot · Step 03b</span>
-        <img class="step-img" src="step-images/step-4.png" alt="Empty signature field" />
+        <img class="step-img" src="step-images/step-5.2.png" alt="Empty signature field" />
       </div>
     </div>
     <div class="nav-row">
@@ -942,7 +1144,7 @@
       </ul>
       <div class="img-slot">
         <span class="img-label">Screenshot · Step 05</span>
-        <img class="step-img" src="step-images/step-6.png" alt="Signature defaults and Save Changes button" />
+        <img class="step-img" src="step-images/step-5.1.png" alt="Signature defaults and Save Changes button" />
       </div>
       <div class="warn-box">
         <span>!</span>
@@ -1000,8 +1202,29 @@
 
 <footer>
   <div class="footer-logo">EMIR</div>
-  <p>For support, contact <a href="mailto:mayarzarie@emirintelligence.com">mayarzarie@emirintelligence.com</a></p>
+  <p>Need help? Use the support button.</p>
 </footer>
+
+<!-- Floating support widget -->
+<div class="support-widget">
+  <div class="support-widget-card" id="supportCard">
+    <div class="support-card-body">
+      <div class="support-card-eyebrow">Your contact</div>
+      <div class="support-card-name">Mayar Zarie</div>
+      <div class="support-card-title">Senior Marketing Executive</div>
+      <p class="support-card-message">Hi, I'm here to help. How can I assist?</p>
+      <a class="support-card-email-btn" href="mailto:mayarzarie@emirintelligence.com">Contact</a>
+    </div>
+    <div class="support-card-photo-wrap">
+      <div class="support-card-photo-ring" aria-hidden="true"></div>
+      <img class="support-card-photo" src="https://emirintelligence.eme-devops.com/2024/09/EMIR_MarketingPR_Website_Careers-Profile-Image_Mayar-Zarie_Q32024.png" alt="Mayar Zarie" />
+    </div>
+  </div>
+  <button type="button" class="support-widget-btn" id="supportWidgetBtn" aria-label="Contact support">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+  <span class="support-widget-tooltip" id="supportTooltip">Need help? We're here to assist.</span>
+</div>
 
 <script>
   const TOTAL = 6;
@@ -1294,6 +1517,25 @@
       if (matches.length === 1) prefetchSignature(matches[0].path);
     }, 350);
   });
+
+  (function supportWidget() {
+    var widget = document.querySelector('.support-widget');
+    var btn = document.getElementById('supportWidgetBtn');
+    var card = document.getElementById('supportCard');
+    if (!widget || !btn || !card) return;
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = card.classList.toggle('open');
+      widget.classList.toggle('card-open', isOpen);
+    });
+    document.addEventListener('click', function () {
+      card.classList.remove('open');
+      widget.classList.remove('card-open');
+    });
+    card.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+  })();
 </script>
 </body>
 </html>
