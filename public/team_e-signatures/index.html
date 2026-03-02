@@ -714,13 +714,11 @@
     background: rgba(190,161,82,0.5);
   }
   .footer-logo {
-    font-family: 'Miller Banner', serif;
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: #fff;
-    margin-bottom: 12px;
+    display: block;
+    height: 28px;
+    width: auto;
+    margin: 0 auto 12px;
+    object-fit: contain;
   }
   footer p { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 400; letter-spacing: 0.04em; }
   footer a { color: #bea152; text-decoration: none; }
@@ -1115,8 +1113,8 @@
         <span>Your EMIR signature will appear in the field, exactly as it will look in your emails.</span>
       </div>
       <div class="img-slot">
-        <span class="img-label">Screenshot · Step 04</span>
-        <img class="step-img" src="step-images/step-5.png" alt="Signature pasted into the Gmail signature field" />
+        <span class="img-label">Screenshot · Step 04 — Paste</span>
+        <img class="step-img" src="step-images/step-6.png" alt="Right-click in the signature field and choose Paste" />
       </div>
     </div>
     <div class="nav-row">
@@ -1169,6 +1167,10 @@
     <div class="step-rule"></div>
     <div class="step-body">
       <p>Compose a new email and verify your signature appears correctly at the bottom of the message.</p>
+      <div class="img-slot">
+        <span class="img-label">Screenshot · Step 06</span>
+        <img class="step-img" src="step-images/step-7.png" alt="Composed Gmail email showing the EMIR signature" />
+      </div>
       <ul class="sub-steps">
         <li><div class="sub-mark">✓</div><div>Your name and contact details are correct.</div></li>
         <li><div class="sub-mark">✓</div><div>The EMIR logo and images are loading correctly.</div></li>
@@ -1187,10 +1189,6 @@
           <a class="help-email" href="mailto:mayarzarie@emirintelligence.com">mayarzarie@emirintelligence.com</a>
         </div>
       </div>
-      <div class="img-slot">
-        <span class="img-label">Screenshot · Step 06</span>
-        <img class="step-img" src="step-images/step-7.png" alt="Composed Gmail email showing the EMIR signature" />
-      </div>
     </div>
     <div class="nav-row">
       <button class="btn-back" onclick="back(6)">← Back</button>
@@ -1201,7 +1199,7 @@
 </main>
 
 <footer>
-  <div class="footer-logo">EMIR</div>
+  <img class="footer-logo" src="https://emirintelligence.eme-devops.com/2022/10/emir-logo-white.png" alt="EMIR" />
   <p>Need help? Use the support button.</p>
 </footer>
 
