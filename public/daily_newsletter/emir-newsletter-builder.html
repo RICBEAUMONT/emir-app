@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMIR · Daily Report Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Miller Banner';
+    src: url('../team_e-signatures/fonts/MillerBanner.woff2') format('woff2'), url('../team_e-signatures/fonts/MillerBanner.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+:root {
+  --black:    #231f20;
+  --dark:     #231f20;
+  --surface:  #2a2628;
+  --surface2: #332f31;
+  --border:   #252525;
+  --border2:  #2e2e2e;
+  --gold:     #b8942a;
+  --gold-hi:  #d4aa44;
+  --gold-lo:  #8a6e1e;
+  --gold-glow:rgba(184,148,42,0.12);
+  --text:     #e8e2d6;
+  --text-mid: #9a9080;
+  --text-dim: #555;
+  --white:    #f5f0e8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Montserrat',sans-serif;background:var(--black);color:var(--text);min-height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* HEADER */
+.app-header{background:var(--black);border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative;}
+.app-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{display:block;height:26px;width:auto;object-fit:contain;}
+.brand-sep{color:var(--gold);font-size:0.7rem;}
+.brand-sub{font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);font-weight:500;}
+.header-actions{display:flex;gap:8px;align-items:center;}
+.btn{padding:7px 16px;border-radius:2px;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.18s;}
+.btn-ghost{background:transparent;color:var(--text-mid);border:1px solid var(--border2);}
+.btn-ghost:hover{color:var(--text);border-color:#444;}
+.btn-gold{background:var(--gold);color:var(--black);font-weight:700;}
+.btn-gold:hover{background:var(--gold-hi);}
+.btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold-lo);}
+.btn-outline:hover{background:var(--gold-glow);border-color:var(--gold);}
+
+/* WORKSPACE */
+.workspace{display:grid;grid-template-columns:360px 1fr;height:calc(100vh - 52px);overflow:hidden;}
+
+/* BUILDER */
+.builder{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;}
+.builder::-webkit-scrollbar{width:4px;}
+.builder::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.panel-sec{padding:18px 20px;border-bottom:1px solid var(--border);}
+.panel-sec:last-child{border-bottom:none;flex:1;}
+.sec-label{font-size:0.58rem;letter-spacing:0.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sec-label span{color:var(--text-dim);font-size:0.56rem;}
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:5px;}
+.fg input,.fg textarea,.fg select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:2px;color:var(--text);padding:8px 11px;font-family:'Montserrat',sans-serif;font-size:0.8rem;transition:border-color 0.15s;resize:vertical;}
+.fg input:focus,.fg textarea:focus{outline:none;border-color:var(--gold-lo);box-shadow:0 0 0 2px var(--gold-glow);}
+.fg textarea{min-height:65px;}
+.block-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.bt-btn{background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text-mid);padding:10px 6px 8px;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;text-align:center;transition:all 0.15s;font-family:'Montserrat',sans-serif;}
+.bt-btn:hover{border-color:var(--gold-lo);color:var(--gold);background:var(--gold-glow);}
+.bt-btn .ic{font-size:1.1rem;display:block;margin-bottom:5px;}
+.block-list{display:flex;flex-direction:column;gap:6px;}
+.block-item{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:10px 12px;cursor:pointer;transition:all 0.15s;}
+.block-item:hover{border-color:#3a3a3a;}
+.block-item.active{border-color:var(--gold-lo);background:rgba(184,148,42,0.06);}
+.block-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.bi-type{font-size:0.55rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);background:rgba(184,148,42,0.1);border:1px solid rgba(184,148,42,0.2);padding:2px 7px;border-radius:2px;}
+.bi-ctrls{display:flex;gap:3px;}
+.bi-ctrl{background:none;border:none;color:var(--text-dim);cursor:pointer;padding:2px 5px;font-size:0.75rem;border-radius:2px;transition:color 0.12s;font-family:inherit;}
+.bi-ctrl:hover{color:var(--text);}
+.bi-ctrl.del:hover{color:#c0392b;}
+.bi-preview{font-size:0.72rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.block-ed{background:var(--black);border:1px solid var(--gold-lo);border-radius:3px;padding:14px;margin-top:8px;display:none;}
+.block-ed.open{display:block;}
+.block-ed-title{font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.upload-zone{border:1.5px dashed var(--border2);border-radius:3px;padding:18px;text-align:center;cursor:pointer;transition:all 0.15s;color:var(--text-dim);font-size:0.72rem;letter-spacing:0.06em;}
+.upload-zone:hover{border-color:var(--gold-lo);color:var(--gold);}
+.upload-zone.filled{border-style:solid;border-color:var(--gold-lo);}
+.upload-prev{width:100%;height:80px;object-fit:cover;border-radius:2px;margin-top:8px;}
+.empty-state{text-align:center;padding:32px 16px;color:var(--text-dim);font-size:0.68rem;letter-spacing:0.1em;line-height:1.8;}
+.empty-state .ic{font-size:1.8rem;margin-bottom:10px;opacity:0.4;}
+
+/* PREVIEW PANEL */
+.preview-panel{background:#fff;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:28px 24px 60px;}
+.preview-panel::-webkit-scrollbar{width:5px;}
+.preview-panel::-webkit-scrollbar-thumb{background:#ccc;}
+.preview-bar{display:flex;align-items:center;width:100%;max-width:640px;margin-bottom:20px;gap:10px;}
+.preview-bar-label{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:#666;flex:1;display:flex;align-items:center;gap:8px;}
+.preview-bar-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold),0 0 16px rgba(184,148,42,0.4);animation:previewDotPulse 2s ease-in-out infinite;}
+@keyframes previewDotPulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--gold),0 0 16px rgba(184,148,42,0.4);}50%{opacity:0.85;box-shadow:0 0 12px var(--gold),0 0 24px rgba(184,148,42,0.5);}}
+
+/* NEWSLETTER */
+.nl{width:100%;max-width:640px;background:var(--black);box-shadow:0 8px 32px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.06);}
+.nl-head{background:var(--black);padding:36px 48px 0;position:relative;overflow:hidden;}
+.nl-head::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 5%,var(--gold) 35%,var(--gold-hi) 50%,var(--gold) 65%,transparent 95%);}
+.nl-head-inner{text-align:center;padding-bottom:24px;position:relative;}
+.nl-logo{display:block;height:42px;width:auto;margin:0 auto 12px;object-fit:contain;}
+.nl-wordmark-sub{font-family:'Montserrat',sans-serif;font-size:0.55rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);font-weight:300;margin-bottom:20px;}
+.nl-rule-gold{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 0 16px;}
+.nl-datebar{display:flex;justify-content:space-between;align-items:center;padding:10px 0 22px;}
+.nl-datebar-date{font-family:'Montserrat',sans-serif;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);}
+.nl-datebar-edition{font-family:'Montserrat',sans-serif;font-size:0.58rem;letter-spacing:0.12em;color:var(--text-dim);}
+.nl-body{padding:36px 48px;}
+.nl-intro-block{position:relative;padding:20px 20px 20px 24px;margin-bottom:36px;background:rgba(184,148,42,0.04);border:1px solid rgba(184,148,42,0.15);display:flex;gap:24px;align-items:flex-start;}
+.nl-intro-block::before{content:'';position:absolute;top:0;bottom:0;left:0;width:2px;background:linear-gradient(180deg,transparent,var(--gold),transparent);}
+.nl-intro-text{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:#b0a898;line-height:1.7;font-weight:300;flex:1;min-width:0;}
+.nl-intro-author{flex-shrink:0;text-align:center;}
+.nl-intro-author img{width:72px;height:72px;object-fit:cover;border-radius:50%;border:2px solid rgba(184,148,42,0.3);display:block;margin:0 auto;}
+.nl-intro-author-name{font-size:0.65rem;font-weight:600;color:rgba(255,255,255,0.9);margin-top:6px;letter-spacing:0.04em;}
+.nl-intro-author-title{font-size:0.55rem;color:var(--gold);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;}
+.nl-block{margin-bottom:32px;}
+.nl-section-tag{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.nl-section-tag-label{font-family:'Montserrat',sans-serif;font-size:0.5rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);white-space:nowrap;font-weight:600;}
+.nl-section-tag-line{flex:1;height:1px;background:var(--border);}
+.nl-article-heading{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:600;color:#f0ece3;line-height:1.2;margin-bottom:12px;letter-spacing:0.02em;}
+.nl-article-body{font-family:'Montserrat',sans-serif;font-size:0.8rem;line-height:1.85;color:#7a7060;font-weight:300;}
+.nl-image-wrap img{width:100%;display:block;}
+.nl-image-caption{font-size:0.65rem;color:var(--text-dim);padding:8px 0 0;font-style:italic;border-top:1px solid var(--border);margin-top:6px;letter-spacing:0.05em;font-family:'Montserrat',sans-serif;}
+.nl-quote-wrap{background:var(--black);padding:32px 36px;border-top:1px solid rgba(184,148,42,0.3);border-bottom:1px solid rgba(184,148,42,0.3);position:relative;}
+.nl-quote-mark{font-family:'Miller Banner',serif;font-size:6rem;color:var(--gold);opacity:0.15;position:absolute;top:-18px;left:28px;line-height:1;}
+.nl-quote-text{font-family:'Miller Banner',serif;font-size:1.3rem;font-style:italic;font-weight:400;color:#ccc;line-height:1.55;position:relative;}
+.nl-quote-attribution{margin-top:14px;}
+.nl-quote-name{font-family:'Miller Banner',serif;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:#e8e2d6;font-weight:400;display:block;font-style:normal;}
+.nl-quote-title{font-family:'Montserrat',sans-serif;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-weight:400;margin-top:4px;}
+.nl-highlight-wrap{background:var(--black);border:1px solid rgba(184,148,42,0.25);padding:22px 26px;position:relative;}
+.nl-highlight-wrap::after{content:'';position:absolute;top:0;right:0;width:40px;height:40px;background:linear-gradient(225deg,rgba(184,148,42,0.15),transparent);}
+.nl-hl-label{font-family:'Montserrat',sans-serif;font-size:0.5rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:600;}
+.nl-hl-text{font-family:'Montserrat',sans-serif;font-size:0.82rem;line-height:1.7;color:#9a9080;font-weight:300;}
+.nl-bullets-wrap ul{list-style:none;padding:0;}
+.nl-bullets-wrap ul li{padding:8px 0 8px 16px;position:relative;font-family:'Montserrat',sans-serif;font-size:0.78rem;color:#7a7060;border-bottom:1px solid var(--border);line-height:1.5;font-weight:300;}
+.nl-bullets-wrap ul li::before{content:'—';color:var(--gold);position:absolute;left:0;font-weight:300;}
+.nl-divider-wrap{display:flex;align-items:center;gap:16px;padding:4px 0;}
+.nl-div-line{flex:1;height:1px;background:var(--border);}
+.nl-div-ornament{color:var(--gold);font-size:0.55rem;letter-spacing:0.3em;font-family:'Montserrat',sans-serif;}
+.nl-footer{background:var(--black);padding:44px 48px 40px;text-align:center;position:relative;}
+.nl-footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 8%,rgba(184,148,42,0.35) 30%,rgba(184,148,42,0.5) 50%,rgba(184,148,42,0.35) 70%,transparent 92%);}
+.nl-footer-inner{max-width:420px;margin:0 auto;}
+.nl-footer-logo{display:block;height:30px;width:auto;margin:0 auto 12px;object-fit:contain;opacity:0.92;}
+.nl-footer-sub{font-size:0.52rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);font-family:'Montserrat',sans-serif;font-weight:500;margin-bottom:24px;}
+.nl-footer-rule{border:none;height:1px;background:linear-gradient(90deg,transparent,rgba(184,148,42,0.25),transparent);margin:0 0 24px;}
+.nl-footer-social{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:28px;}
+.nl-footer-social a{display:block;line-height:0;opacity:0.9;transition:opacity 0.2s;}
+.nl-footer-social a:hover{opacity:1;}
+.nl-footer-social img{width:28px;height:28px;display:block;object-fit:contain;}
+.nl-footer-contact{border-top:1px solid rgba(184,148,42,0.12);padding-top:22px;}
+.nl-footer-contact-label{font-size:0.5rem;letter-spacing:0.26em;text-transform:uppercase;color:var(--gold);font-family:'Montserrat',sans-serif;margin-bottom:14px;}
+.nl-footer-note{font-size:0.72rem;color:#a89f8f;font-family:'Montserrat',sans-serif;letter-spacing:0.04em;line-height:2;}
+.nl-footer-note strong{color:#c4bcb0;}
+.nl-footer-note a{color:var(--gold);text-decoration:none;}
+.nl-footer-note a:hover{color:var(--gold-hi);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--black);border:1px solid var(--gold-lo);color:var(--gold);padding:10px 18px;font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.12em;border-radius:2px;z-index:9999;opacity:0;transform:translateY(8px);transition:all 0.2s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <img class="brand-logo" src="https://emirintelligence.eme-devops.com/2022/10/emir-logo-white.png" alt="EMIR" />
+    <span class="brand-sep">·</span>
+    <span class="brand-sub">Daily Report Studio</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="clearAll()">Reset</button>
+    <button class="btn btn-outline" onclick="exportHTML()">↓ Export</button>
+    <button class="btn btn-gold" onclick="copyHTML()">Copy HTML</button>
+  </div>
+</header>
+
+<div class="workspace">
+  <div class="builder">
+
+    <div class="panel-sec">
+      <div class="sec-label">Report Settings</div>
+      <div class="fg"><label>Date</label><input type="date" id="nl-date"></div>
+      <div class="fg"><label>Edition Label</label><input type="text" id="nl-edition" placeholder="e.g. Vol. 3 · Issue 47"></div>
+      <div class="fg"><label>Opening message author</label><select id="nl-author"><option value="none">None</option><option value="trevor">Trevor</option><option value="cassidy">Cassidy Lyon</option></select></div>
+      <div class="fg"><label>CEO Opening Message</label><textarea id="nl-intro" placeholder="A message from the CEO to EMIR members..."></textarea></div>
+      <div class="fg"><label>Footer Note</label><input type="text" id="nl-footer" placeholder="e.g. Confidential — EMIR Members Only"></div>
+    </div>
+
+    <div class="panel-sec">
+      <div class="sec-label">Add Content Block</div>
+      <div class="block-grid">
+        <button class="bt-btn" onclick="addBlock('article')"><span class="ic">✦</span>Article</button>
+        <button class="bt-btn" onclick="addBlock('image')"><span class="ic">◼</span>Image</button>
+        <button class="bt-btn" onclick="addBlock('highlight')"><span class="ic">◈</span>Highlight</button>
+        <button class="bt-btn" onclick="addBlock('quote')"><span class="ic">"</span>Quote</button>
+        <button class="bt-btn" onclick="addBlock('bullets')"><span class="ic">≡</span>Bullets</button>
+        <button class="bt-btn" onclick="addBlock('divider')"><span class="ic">—</span>Divider</button>
+      </div>
+    </div>
+
+    <div class="panel-sec" style="flex:1">
+      <div class="sec-label">Content Blocks <span id="block-count"></span></div>
+      <div class="block-list" id="block-list">
+        <div class="empty-state"><div class="ic">◻</div>No blocks added yet.<br>Choose a block type above.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="preview-panel">
+    <div class="preview-bar">
+      <span class="preview-bar-label"><span class="preview-bar-dot" aria-hidden="true"></span>Live Preview</span>
+      <button class="btn btn-ghost" style="font-size:0.58rem;padding:5px 12px;" onclick="copyHTML()">Copy HTML</button>
+      <button class="btn btn-outline" style="font-size:0.58rem;padding:5px 12px;" onclick="exportHTML()">Export</button>
+    </div>
+
+    <div class="nl" id="nl-preview">
+      <div class="nl-head">
+        <div class="nl-head-inner">
+          <img class="nl-logo" src="https://emirintelligence.eme-devops.com/2022/10/emir-logo-white.png" alt="EMIR" />
+          <div class="nl-wordmark-sub">Successful Perspectives</div>
+          <div class="nl-rule-gold"></div>
+          <div class="nl-datebar">
+            <div class="nl-datebar-date" id="preview-date">—</div>
+            <div class="nl-datebar-edition" id="preview-edition">Daily Briefing</div>
+          </div>
+        </div>
+      </div>
+      <div class="nl-body">
+        <div class="nl-intro-block">
+          <div class="nl-intro-text" id="preview-intro">Your opening message to EMIR members will appear here.</div>
+          <div class="nl-intro-author" id="preview-intro-author" style="display:none;"><img id="preview-intro-author-img" src="" alt=""><div class="nl-intro-author-name" id="preview-intro-author-name"></div><div class="nl-intro-author-title" id="preview-intro-author-title"></div></div>
+        </div>
+        <div id="blocks-preview"></div>
+      </div>
+      <div class="nl-footer">
+        <div class="nl-footer-inner">
+          <img class="nl-footer-logo" src="https://emirintelligence.eme-devops.com/2022/10/emir-logo-white.png" alt="EMIR" />
+          <div class="nl-footer-sub">Successful Perspectives</div>
+          <hr class="nl-footer-rule" />
+          <div class="nl-footer-social">
+            <a href="https://www.emirintelligence.com" target="_blank" rel="noopener noreferrer" aria-label="Website"><img src="social/EMIR_Social-Handle-icons-01.png" alt="Website" /></a>
+            <a href="https://www.linkedin.com/company/emiradvisory" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><img src="social/EMIR_Social-Handle-icons-02.png" alt="LinkedIn" /></a>
+            <a href="https://www.youtube.com/@emiradvisory" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img src="social/EMIR_Social-Handle-icons-05.png" alt="YouTube" /></a>
+          </div>
+          <div class="nl-footer-contact">
+            <div class="nl-footer-contact-label">Contact</div>
+            <div class="nl-footer-note" id="preview-footer">
+              Level 1, Office 124, Building 9<br>Media City, Dubai<br>U.A.E. P.O. Box 503014<br>Phone: +971 4 558 8197<br>Email: <a href="mailto:emergingmarkets@emirintelligence.com">emergingmarkets@emirintelligence.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let blocks=[],activeId=null;
+
+window.onload=()=>{
+  const d=new Date();
+  document.getElementById('nl-date').value=d.toISOString().split('T')[0];
+  document.getElementById('nl-edition').value='Daily Briefing';
+  ['nl-date','nl-edition','nl-intro','nl-footer'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',updatePreview);
+  });
+  document.getElementById('nl-author').addEventListener('change',updatePreview);
+  updatePreview();
+};
+
+const AUTHORS={none:null,trevor:{name:'Trevor',image:'authors/trevor.png',title:''},cassidy:{name:'Cassidy Lyon',image:'https://media.licdn.com/dms/image/v2/D4D03AQHt3UkYOAMbwA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725361384482?e=1773878400&v=beta&t=w8gHm_wq7EntJ0amQZD6U30so9oEKGx2j5bTHDemtGY',title:'Managing Director — EMIR KSA'}};
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function defaultData(t){
+  return{article:{sectionLabel:'Market Update',heading:'',body:''},image:{url:'',caption:''},highlight:{label:'Key Highlight',text:''},quote:{text:'',name:'',title:''},bullets:{sectionLabel:'Highlights',items:''},divider:{}}[t]||{};
+}
+function addBlock(type){const b={id:uid(),type,data:defaultData(type)};blocks.push(b);activeId=b.id;renderList();updatePreview();}
+function removeBlock(id,e){e.stopPropagation();blocks=blocks.filter(b=>b.id!==id);if(activeId===id)activeId=null;renderList();updatePreview();}
+function moveBlock(id,dir,e){e.stopPropagation();const i=blocks.findIndex(b=>b.id===id),j=i+dir;if(j<0||j>=blocks.length)return;[blocks[i],blocks[j]]=[blocks[j],blocks[i]];renderList();updatePreview();}
+function toggleBlock(id){activeId=activeId===id?null:id;renderList();}
+
+function renderList(){
+  const list=document.getElementById('block-list');
+  document.getElementById('block-count').textContent=blocks.length?blocks.length+' item'+(blocks.length>1?'s':''):'';
+  if(!blocks.length){list.innerHTML='<div class="empty-state"><div class="ic">◻</div>No blocks added yet.<br>Choose a block type above.</div>';return;}
+  list.innerHTML=blocks.map((b,i)=>`
+    <div class="block-item ${b.id===activeId?'active':''}" onclick="toggleBlock('${b.id}')">
+      <div class="block-item-top">
+        <span class="bi-type">${b.type}</span>
+        <div class="bi-ctrls">
+          ${i>0?`<button class="bi-ctrl" onclick="moveBlock('${b.id}',-1,event)">↑</button>`:''}
+          ${i<blocks.length-1?`<button class="bi-ctrl" onclick="moveBlock('${b.id}',1,event)">↓</button>`:''}
+          <button class="bi-ctrl del" onclick="removeBlock('${b.id}',event)">✕</button>
+        </div>
+      </div>
+      <div class="bi-preview">${getPreview(b)}</div>
+      ${b.id===activeId?renderEditor(b):''}
+    </div>`).join('');
+  blocks.forEach(b=>attachListeners(b));
+}
+
+function getPreview(b){
+  if(b.type==='article')return b.data.heading||(b.data.sectionLabel||'(empty)');
+  if(b.type==='image')return b.data.url?'▣ Image loaded':'(no image)';
+  if(b.type==='highlight')return b.data.text?b.data.text.slice(0,45)+'…':'(empty)';
+  if(b.type==='quote')return b.data.text?'"'+b.data.text.slice(0,40)+'…"':(b.data.name||b.data.title)?(b.data.name||'')+(b.data.name&&b.data.title?' · ':'')+(b.data.title||''):'(empty)';
+  if(b.type==='bullets')return b.data.items?b.data.items.split('\n').filter(x=>x.trim()).length+' items':'(empty)';
+  if(b.type==='divider')return '— ornamental divider —';
+  return '';
+}
+
+function renderEditor(b){
+  if(b.type==='article')return`<div class="block-ed open" onclick="event.stopPropagation()"><div class="block-ed-title">Edit Article</div>
+    <div class="fg"><label>Section Label</label><input id="be-${b.id}-sectionLabel" value="${e(b.data.sectionLabel)}"></div>
+    <div class="fg"><label>Headline</label><input id="be-${b.id}-heading" value="${e(b.data.heading)}"></div>
+    <div class="fg"><label>Body</label><textarea id="be-${b.id}-body">${e(b.data.body)}</textarea></div></div>`;
+  if(b.type==='image')return`<div class="block-ed open" onclick="event.stopPropagation()"><div class="block-ed-title">Edit Image</div>
+    <div class="fg"><label>Image URL</label><input id="be-${b.id}-url" value="${e(b.data.url)}" placeholder="https://..."></div>
+    <div class="fg"><label>Or Upload File</label>
+      <div class="upload-zone ${b.data.url?'filled':''}" onclick="document.getElementById('be-${b.id}-file').click()">
+        ${b.data.url?`<img class="upload-prev" src="${b.data.url}">`:'↑ Click to upload image'}
+      </div>
+      <input type="file" id="be-${b.id}-file" accept="image/*" style="display:none" onchange="handleUpload('${b.id}',this)">
+    </div>
+    <div class="fg"><label>Caption</label><input id="be-${b.id}-caption" value="${e(b.data.caption)}"></div></div>`;
+  if(b.type==='highlight')return`<div class="block-ed open" onclick="event.stopPropagation()"><div class="block-ed-title">Edit Highlight</div>
+    <div class="fg"><label>Label</label><input id="be-${b.id}-label" value="${e(b.data.label)}"></div>
+    <div class="fg"><label>Content</label><textarea id="be-${b.id}-text">${e(b.data.text)}</textarea></div></div>`;
+  if(b.type==='quote')return`<div class="block-ed open" onclick="event.stopPropagation()"><div class="block-ed-title">Edit Quote</div>
+    <div class="fg"><label>Quote Text</label><textarea id="be-${b.id}-text">${e(b.data.text)}</textarea></div>
+    <div class="fg"><label>Name</label><input id="be-${b.id}-name" value="${e(b.data.name)}" placeholder="Speaker or author name"></div>
+    <div class="fg"><label>Title</label><input id="be-${b.id}-title" value="${e(b.data.title)}" placeholder="Job title or role"></div></div>`;
+  if(b.type==='bullets')return`<div class="block-ed open" onclick="event.stopPropagation()"><div class="block-ed-title">Edit Bullet List</div>
+    <div class="fg"><label>Section Label</label><input id="be-${b.id}-sectionLabel" value="${e(b.data.sectionLabel)}"></div>
+    <div class="fg"><label>Items (one per line)</label><textarea style="min-height:90px" id="be-${b.id}-items">${e(b.data.items)}</textarea></div></div>`;
+  if(b.type==='divider')return`<div class="block-ed open" onclick="event.stopPropagation()"><div class="block-ed-title">Divider — no options</div></div>`;
+  return '';
+}
+
+function attachListeners(b){
+  const fields={article:['sectionLabel','heading','body'],image:['url','caption'],highlight:['label','text'],quote:['text','name','title'],bullets:['sectionLabel','items'],divider:[]};
+  (fields[b.type]||[]).forEach(f=>{const el=document.getElementById(`be-${b.id}-${f}`);if(el)el.addEventListener('input',()=>{b.data[f]=el.value;updatePreview();});});
+}
+
+function handleUpload(id,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{const b=blocks.find(x=>x.id===id);if(b){b.data.url=ev.target.result;renderList();updatePreview();}};
+  reader.readAsDataURL(file);
+}
+
+function e(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+function updatePreview(){
+  const dv=document.getElementById('nl-date').value;
+  if(dv){const d=new Date(dv+'T12:00:00');document.getElementById('preview-date').textContent=d.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();}
+  document.getElementById('preview-edition').textContent=document.getElementById('nl-edition').value||'Daily Briefing';
+  const intro=document.getElementById('nl-intro').value;
+  document.getElementById('preview-intro').textContent=intro||'Your opening message to EMIR members will appear here.';
+  const authorId=document.getElementById('nl-author').value;
+  const author=AUTHORS[authorId];
+  const authorEl=document.getElementById('preview-intro-author');
+  const authorImg=document.getElementById('preview-intro-author-img');
+  if(author&&author.image){authorEl.style.display='block';authorImg.src=author.image;authorImg.alt=author.name;document.getElementById('preview-intro-author-name').textContent=author.name||'';document.getElementById('preview-intro-author-title').textContent=author.title||'';} else {authorEl.style.display='none';authorImg.src='';document.getElementById('preview-intro-author-name').textContent='';document.getElementById('preview-intro-author-title').textContent='';}
+  const footer=document.getElementById('nl-footer').value;
+  const addressHtml='Level 1, Office 124, Building 9<br>Media City, Dubai<br>U.A.E. P.O. Box 503014<br>Phone: +971 4 558 8197<br>Email: <a href="mailto:emergingmarkets@emirintelligence.com">emergingmarkets@emirintelligence.com</a>';
+  document.getElementById('preview-footer').innerHTML=footer?`<strong>${e(footer)}</strong><br><br>${addressHtml}`:addressHtml;
+  document.getElementById('blocks-preview').innerHTML=blocks.map(renderBlockHTML).join('');
+}
+
+function renderBlockHTML(b){
+  if(b.type==='article')return`<div class="nl-block">
+    ${b.data.sectionLabel?`<div class="nl-section-tag"><span class="nl-section-tag-label">${e(b.data.sectionLabel)}</span><div class="nl-section-tag-line"></div></div>`:''}
+    ${b.data.heading?`<div class="nl-article-heading">${e(b.data.heading)}</div>`:''}
+    ${b.data.body?`<div class="nl-article-body">${e(b.data.body).replace(/\n/g,'<br>')}</div>`:''}
+  </div>`;
+  if(b.type==='image')return b.data.url
+    ?`<div class="nl-block nl-image-wrap"><img src="${b.data.url}" alt="${e(b.data.caption||'')}">${b.data.caption?`<div class="nl-image-caption">${e(b.data.caption)}</div>`:''}</div>`
+    :`<div class="nl-block" style="background:#231f20;border:1px dashed #2a2a2a;height:120px;display:flex;align-items:center;justify-content:center;color:#333;font-size:.65rem;letter-spacing:.1em;font-family:'Montserrat',sans-serif;">IMAGE PLACEHOLDER</div>`;
+  if(b.type==='quote')return`<div class="nl-block nl-quote-wrap"><div class="nl-quote-mark">"</div>
+    <div class="nl-quote-text">${e(b.data.text||'')}</div>
+    ${(b.data.name||b.data.title)?`<div class="nl-quote-attribution"><cite class="nl-quote-name">${e(b.data.name)}</cite>${b.data.title?`<span class="nl-quote-title">${e(b.data.title)}</span>`:''}</div>`:''}</div>`;
+  if(b.type==='highlight')return`<div class="nl-block nl-highlight-wrap">
+    <div class="nl-hl-label">${e(b.data.label||'Key Highlight')}</div>
+    <div class="nl-hl-text">${e(b.data.text||'').replace(/\n/g,'<br>')}</div></div>`;
+  if(b.type==='bullets'){
+    const items=(b.data.items||'').split('\n').filter(x=>x.trim());
+    return`<div class="nl-block nl-bullets-wrap">
+      ${b.data.sectionLabel?`<div class="nl-section-tag"><span class="nl-section-tag-label">${e(b.data.sectionLabel)}</span><div class="nl-section-tag-line"></div></div>`:''}
+      <ul>${items.map(i=>`<li>${e(i)}</li>`).join('')}</ul></div>`;
+  }
+  if(b.type==='divider')return`<div class="nl-block nl-divider-wrap"><div class="nl-div-line"></div><div class="nl-div-ornament">· · ·</div><div class="nl-div-line"></div></div>`;
+  return '';
+}
+
+function buildNewsletterMarkup(){
+  var dv=document.getElementById('nl-date').value;
+  var dateStr=dv?new Date(dv+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase():'—';
+  var edition=document.getElementById('nl-edition').value||'Daily Briefing';
+  var intro=document.getElementById('nl-intro').value||'Your opening message to EMIR members will appear here.';
+  var authorId=document.getElementById('nl-author').value;
+  var author=AUTHORS[authorId];
+  var footerVal=document.getElementById('nl-footer').value;
+  var addressHtml='Level 1, Office 124, Building 9<br>Media City, Dubai<br>U.A.E. P.O. Box 503014<br>Phone: +971 4 558 8197<br>Email: <a href="mailto:emergingmarkets@emirintelligence.com">emergingmarkets@emirintelligence.com</a>';
+  var footerContent=footerVal?'<strong>'+e(footerVal)+'</strong><br><br>'+addressHtml:addressHtml;
+  var authorBlock='';
+  if(author&&author.image){authorBlock='<div class="nl-intro-author"><img src="'+author.image+'" alt="'+e(author.name)+'" width="72" height="72">'+(author.name?'<div class="nl-intro-author-name">'+e(author.name)+'</div>':'')+(author.title?'<div class="nl-intro-author-title">'+e(author.title)+'</div>':'')+'</div>';}
+  return '<div class="nl" role="article">'+
+    '<div class="nl-head"><div class="nl-head-inner">'+
+      '<img class="nl-logo" src="https://emirintelligence.eme-devops.com/2022/10/emir-logo-white.png" alt="EMIR" width="168" height="42">'+
+      '<div class="nl-wordmark-sub">Successful Perspectives</div>'+
+      '<div class="nl-rule-gold"></div>'+
+      '<div class="nl-datebar"><div class="nl-datebar-date">'+e(dateStr)+'</div><div class="nl-datebar-edition">'+e(edition)+'</div></div>'+
+    '</div></div>'+
+    '<div class="nl-body">'+
+      '<div class="nl-intro-block">'+
+        '<div class="nl-intro-text">'+e(intro)+'</div>'+authorBlock+
+      '</div>'+
+      blocks.map(renderBlockHTML).join('')+
+    '</div>'+
+    '<div class="nl-footer">'+
+      '<div class="nl-footer-inner">'+
+        '<img class="nl-footer-logo" src="https://emirintelligence.eme-devops.com/2022/10/emir-logo-white.png" alt="EMIR" width="120" height="30">'+
+        '<div class="nl-footer-sub">Successful Perspectives</div>'+
+        '<hr class="nl-footer-rule">'+
+        '<div class="nl-footer-social">'+
+          '<a href="https://www.emirintelligence.com" target="_blank" rel="noopener noreferrer" aria-label="Website"><img src="social/EMIR_Social-Handle-icons-01.png" alt="Website" width="28" height="28"></a>'+
+          '<a href="https://www.linkedin.com/company/emiradvisory" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><img src="social/EMIR_Social-Handle-icons-02.png" alt="LinkedIn" width="28" height="28"></a>'+
+          '<a href="https://www.youtube.com/@emiradvisory" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img src="social/EMIR_Social-Handle-icons-05.png" alt="YouTube" width="28" height="28"></a>'+
+        '</div>'+
+        '<div class="nl-footer-contact">'+
+          '<div class="nl-footer-contact-label">Contact</div>'+
+          '<div class="nl-footer-note">'+footerContent+'</div>'+
+        '</div>'+
+      '</div></div>'+
+    '</div>';
+}
+
+function getExportStyles(){
+  return '*{box-sizing:border-box;margin:0;padding:0;}body{background:#231f20;font-family:\'Montserrat\',Arial,sans-serif;}'+
+'.nl{max-width:640px;margin:0 auto;background:#231f20;}'+
+'.nl-head{background:#231f20;padding:36px 48px 0;position:relative;}'+
+'.nl-head::before{content:\'\';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 5%,#b8942a 35%,#d4aa44 50%,#b8942a 65%,transparent 95%);}'+
+'.nl-head-inner{text-align:center;padding-bottom:24px;}'+
+'.nl-logo{display:block;height:42px;width:auto;margin:0 auto 12px;object-fit:contain;}'+
+'.nl-wordmark-sub{font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:#b8942a;font-weight:300;margin-bottom:20px;}'+
+'.nl-rule-gold{border:none;height:1px;background:linear-gradient(90deg,transparent,#b8942a,transparent);margin:0 0 16px;}'+
+'.nl-datebar{display:flex;justify-content:space-between;padding:10px 0 22px;}'+
+'.nl-datebar-date{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:#b8942a;}'+
+'.nl-datebar-edition{font-size:.58rem;letter-spacing:.12em;color:#555;}'+
+'.nl-body{padding:36px 48px;}'+
+'.nl-intro-block{position:relative;padding:20px 20px 20px 24px;margin-bottom:36px;background:rgba(184,148,42,.04);border:1px solid rgba(184,148,42,.15);display:flex;gap:24px;align-items:flex-start;}'+
+'.nl-intro-block::before{content:\'\';position:absolute;top:0;bottom:0;left:0;width:2px;background:linear-gradient(180deg,transparent,#b8942a,transparent);}'+
+'.nl-intro-text{font-family:\'Cormorant Garamond\',Georgia,serif;font-size:1.05rem;font-style:italic;color:#b0a898;line-height:1.7;font-weight:300;flex:1;min-width:0;}'+
+'.nl-intro-author{flex-shrink:0;text-align:center;}'+
+'.nl-intro-author img{width:72px;height:72px;object-fit:cover;border-radius:50%;border:2px solid rgba(184,148,42,.3);display:block;margin:0 auto;}'+
+'.nl-intro-author-name{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.9);margin-top:6px;letter-spacing:.04em;}'+
+'.nl-intro-author-title{font-size:.55rem;color:#b8942a;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}'+
+'.nl-block{margin-bottom:32px;}'+
+'.nl-section-tag{display:flex;align-items:center;gap:12px;margin-bottom:14px;}'+
+'.nl-section-tag-label{font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:#b8942a;white-space:nowrap;font-weight:600;}'+
+'.nl-section-tag-line{flex:1;height:1px;background:#252525;}'+
+'.nl-article-heading{font-family:\'Cormorant Garamond\',Georgia,serif;font-size:1.7rem;font-weight:600;color:#f0ece3;line-height:1.2;margin-bottom:12px;}'+
+'.nl-article-body{font-size:.8rem;line-height:1.85;color:#7a7060;font-weight:300;}'+
+'.nl-image-wrap img{width:100%;max-width:100%;height:auto;display:block;}'+
+'.nl-image-caption{font-size:.65rem;color:#555;padding:8px 0 0;font-style:italic;border-top:1px solid #252525;margin-top:6px;}'+
+'.nl-quote-wrap{background:#231f20;padding:32px 36px;border-top:1px solid rgba(184,148,42,.3);border-bottom:1px solid rgba(184,148,42,.3);position:relative;}'+
+'.nl-quote-mark{font-family:\'Miller Banner\',Georgia,\'Times New Roman\',serif;font-size:6rem;color:#b8942a;opacity:.15;position:absolute;top:-18px;left:28px;line-height:1;}'+
+'.nl-quote-text{font-family:\'Miller Banner\',Georgia,\'Times New Roman\',serif;font-size:1.3rem;font-style:italic;font-weight:400;color:#ccc;line-height:1.55;position:relative;}'+
+'.nl-quote-attribution{margin-top:14px;}'+
+'.nl-quote-name{font-family:\'Miller Banner\',Georgia,\'Times New Roman\',serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#e8e2d6;font-weight:400;display:block;font-style:normal;}'+
+'.nl-quote-title{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#b8942a;font-weight:400;margin-top:4px;}'+
+'.nl-highlight-wrap{background:#231f20;border:1px solid rgba(184,148,42,.25);padding:22px 26px;}'+
+'.nl-hl-label{font-size:.5rem;letter-spacing:.28em;text-transform:uppercase;color:#b8942a;margin-bottom:10px;font-weight:600;}'+
+'.nl-hl-text{font-size:.82rem;line-height:1.7;color:#9a9080;font-weight:300;}'+
+'.nl-bullets-wrap ul{list-style:none;padding:0;}'+
+'.nl-bullets-wrap ul li{padding:8px 0 8px 16px;position:relative;font-size:.78rem;color:#7a7060;border-bottom:1px solid #252525;line-height:1.5;font-weight:300;}'+
+'.nl-bullets-wrap ul li::before{content:\'—\';color:#b8942a;position:absolute;left:0;}'+
+'.nl-divider-wrap{display:flex;align-items:center;gap:16px;padding:4px 0;}'+
+'.nl-div-line{flex:1;height:1px;background:#252525;}'+
+'.nl-div-ornament{color:#b8942a;font-size:.55rem;letter-spacing:.3em;}'+
+'.nl-footer{background:#231f20;padding:44px 48px 40px;text-align:center;position:relative;}'+
+'.nl-footer::before{content:\'\';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 8%,rgba(184,148,42,.35) 30%,rgba(184,148,42,.5) 50%,rgba(184,148,42,.35) 70%,transparent 92%);}'+
+'.nl-footer-inner{max-width:420px;margin:0 auto;}'+
+'.nl-footer-logo{display:block;height:30px;width:auto;margin:0 auto 12px;object-fit:contain;opacity:.92;}'+
+'.nl-footer-sub{font-size:.52rem;letter-spacing:.28em;text-transform:uppercase;color:#b8942a;font-weight:500;margin-bottom:24px;}'+
+'.nl-footer-rule{border:none;height:1px;background:linear-gradient(90deg,transparent,rgba(184,148,42,.25),transparent);margin:0 0 24px;}'+
+'.nl-footer-social{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:28px;}'+
+'.nl-footer-social a{display:block;line-height:0;opacity:.9;}'+
+'.nl-footer-social img{width:28px;height:28px;display:block;object-fit:contain;}'+
+'.nl-footer-contact{border-top:1px solid rgba(184,148,42,.12);padding-top:22px;}'+
+'.nl-footer-contact-label{font-size:.5rem;letter-spacing:.26em;text-transform:uppercase;color:#b8942a;margin-bottom:14px;}'+
+'.nl-footer-note{font-size:.72rem;color:#a89f8f;letter-spacing:.04em;line-height:2;}'+
+'.nl-footer-note strong{color:#c4bcb0;}'+
+'.nl-footer-note a{color:#b8942a;text-decoration:none;}';
+}
+
+function getFullHTML(){
+  return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1.0">\n<title>EMIR Daily Newsletter</title>\n<style>\n'+getExportStyles()+'\n</style>\n</head>\n<body>\n'+buildNewsletterMarkup()+'\n</body>\n</html>';
+}
+
+function copyHTML(){navigator.clipboard.writeText(getFullHTML()).then(()=>showToast('✦ HTML copied to clipboard'));}
+function exportHTML(){
+  const date=document.getElementById('nl-date').value||'report';
+  const blob=new Blob([getFullHTML()],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EMIR-Daily-${date}.html`;a.click();
+  showToast('✦ Newsletter exported');
+}
+function clearAll(){if(!confirm('Reset all content?'))return;blocks=[];activeId=null;document.getElementById('nl-intro').value='';document.getElementById('nl-footer').value='';document.getElementById('nl-author').value='none';renderList();updatePreview();}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
