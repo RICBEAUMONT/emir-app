@@ -185,7 +185,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--black);color:var(--tex
       <div class="sec-label">Report Settings</div>
       <div class="fg"><label>Date</label><input type="date" id="nl-date"></div>
       <div class="fg"><label>Edition Label</label><input type="text" id="nl-edition" placeholder="e.g. Vol. 3 · Issue 47"></div>
-      <div class="fg"><label>Opening message author</label><select id="nl-author"><option value="none">None</option><option value="trevor">Trevor</option><option value="cassidy">Cassidy Lyon</option></select></div>
+      <div class="fg"><label>Opening message author</label><select id="nl-author"><option value="none">None</option><option value="trevor">Trevor McFarlane</option><option value="cassidy">Cassidy Lyon</option></select></div>
       <div class="fg"><label>CEO Opening Message</label><textarea id="nl-intro" placeholder="A message from the CEO to EMIR members..."></textarea></div>
       <div class="fg"><label>Footer Note</label><input type="text" id="nl-footer" placeholder="e.g. Confidential — EMIR Members Only"></div>
     </div>
@@ -275,7 +275,7 @@ window.onload=()=>{
   updatePreview();
 };
 
-const AUTHORS={none:null,trevor:{name:'Trevor',image:'authors/trevor.png',title:''},cassidy:{name:'Cassidy Lyon',image:'https://media.licdn.com/dms/image/v2/D4D03AQHt3UkYOAMbwA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725361384482?e=1773878400&v=beta&t=w8gHm_wq7EntJ0amQZD6U30so9oEKGx2j5bTHDemtGY',title:'Managing Director — EMIR KSA'}};
+const AUTHORS={none:null,trevor:{name:'Trevor McFarlane',image:'authors/trevor.png',title:'CEO & Founder · EMIR'},cassidy:{name:'Cassidy Lyon',image:'https://media.licdn.com/dms/image/v2/D4D03AQHt3UkYOAMbwA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725361384482?e=1773878400&v=beta&t=w8gHm_wq7EntJ0amQZD6U30so9oEKGx2j5bTHDemtGY',title:'Managing Director — EMIR KSA'}};
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 function defaultData(t){
