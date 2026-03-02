@@ -32,9 +32,10 @@ export async function middleware(req: NextRequest) {
       .eq('id', session.user.id)
   }
 
-  // If user is not signed in and the current path is not /landing,
+  // If user is not signed in and the current path is not /landing or the public signature guide,
   // redirect the user to /landing
-  if (!session && req.nextUrl.pathname !== '/landing') {
+  const isPublicPath = req.nextUrl.pathname === '/landing' || req.nextUrl.pathname.startsWith('/team_e-signatures')
+  if (!session && !isPublicPath) {
     return NextResponse.redirect(new URL('/landing', req.url))
   }
 

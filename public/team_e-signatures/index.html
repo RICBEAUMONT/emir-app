@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMIR — Email Signature Installation</title>
+<style>
+  @font-face {
+    font-family: 'Miller Banner';
+    src: url('fonts/MillerBanner.woff2') format('woff2'), url('fonts/MillerBanner.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Akkurat Regular Pro';
+    src: url('fonts/AkkuratRegularPro.woff2') format('woff2'), url('fonts/AkkuratRegularPro.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  :root {
+    --black:   #0a0a0a;
+    --dark:    #111111;
+    --card:    #161616;
+    --surface: #1c1c1c;
+    --border:  #2a2a2a;
+    --border2: #333333;
+    --gold:    #c9a84c;
+    --gold2:   #e8c96d;
+    --gold-dim: rgba(201,168,76,0.15);
+    --gold-line: rgba(201,168,76,0.35);
+    --white:   #ffffff;
+    --off-white: #f0ede8;
+    --muted:   #888888;
+    --light:   #bbbbbb;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    background: #f6f5f2;
+    color: #1a1a1a;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--dark);
+    border-bottom: 1px solid var(--border);
+    padding: 56px 60px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-video-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .header-video-wrap video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 0% 50%;
+    display: block;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    right: -100px; top: -100px;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-line), transparent);
+    z-index: 1;
+  }
+
+  .header-inner { position: relative; z-index: 2; max-width: 860px; }
+
+  .header-logo {
+    display: block;
+    height: 32px;
+    width: auto;
+    margin-bottom: 24px;
+    object-fit: contain;
+  }
+
+  .header-eyebrow {
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .header-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1px;
+    background: #bea152;
+  }
+
+  header h1 {
+    font-family: 'Miller Banner', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+  }
+  header h1 .h1-stop {
+    color: #bea152;
+  }
+
+  .header-sub {
+    margin-top: 14px;
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    background: #0d0d0d;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 48px;
+    display: flex;
+    align-items: stretch;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .progress-bar::-webkit-scrollbar { display: none; }
+
+  .prog-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 20px 0;
+    position: relative;
+    transition: opacity 0.2s ease;
+  }
+  .prog-step:not(.active):not(.done) { opacity: 0.35; }
+  .prog-step:hover { opacity: 0.9; }
+
+  .prog-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    letter-spacing: 0;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+  .prog-step.active .prog-num {
+    border-color: #bea152;
+    color: #bea152;
+    box-shadow: 0 0 0 1px rgba(190,161,82,0.25);
+  }
+  .prog-step.done .prog-num {
+    background: #bea152;
+    border-color: #bea152;
+    color: #0d0d0d;
+    font-size: 11px;
+  }
+  .prog-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    white-space: nowrap;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.25s ease;
+  }
+  .prog-step.active .prog-label { color: rgba(255,255,255,0.9); }
+  .prog-step.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 1px;
+    background: #bea152;
+  }
+  .prog-divider {
+    width: 24px; height: 1px;
+    background: rgba(255,255,255,0.12);
+    align-self: center;
+    flex-shrink: 0;
+    margin: 0 6px;
+    transition: background 0.25s ease;
+  }
+  .prog-divider.done { background: rgba(190,161,82,0.5); }
+
+  /* ── Main ── */
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 56px 28px 100px;
+  }
+
+  /* ── Step card ── */
+  .step {
+    background: #ffffff;
+    border: 1px solid #e5e2dc;
+    border-radius: 6px;
+    padding: 48px 52px;
+    margin-bottom: 24px;
+    display: none;
+    animation: fadeUp 0.35s ease;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .step::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(90deg, #bea152 0%, rgba(190,161,82,0.4) 100%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .step.visible { display: block; }
+  .step.visible::before { opacity: 1; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .step-badge {
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    color: #bea152;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-top: 6px;
+    flex-shrink: 0;
+    min-width: 64px;
+  }
+  .step-title-wrap { border-left: 1px solid #e0ddd6; padding-left: 24px; flex: 1; }
+  .step-title-wrap h2 {
+    font-family: 'Miller Banner', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: #1a1a1a;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+  }
+  .step-title-wrap .step-subtitle {
+    font-size: 11px;
+    color: #6b6b6b;
+    margin-top: 6px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .step-rule {
+    height: 1px;
+    background: #ebe9e4;
+    margin-bottom: 28px;
+  }
+
+  .step-body {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.75;
+    font-weight: 400;
+  }
+  .step-body p + p { margin-top: 16px; }
+  .step-body strong { color: #1a1a1a; font-weight: 600; }
+
+  /* ── Signature preview box (on-page) ── */
+  .signature-preview-wrap {
+    display: none;
+    margin: 28px 0;
+    border: 1px solid #e5e2dc;
+    border-radius: 6px;
+    background: #fafaf8;
+    padding: 24px;
+    position: relative;
+  }
+  .signature-preview-wrap.visible {
+    display: block;
+    animation: fadeUp 0.35s ease;
+  }
+  .signature-preview-wrap .preview-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a7a4a;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .signature-preview-inner {
+    position: relative;
+    min-height: 560px;
+  }
+  .signature-loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(250, 249, 247, 0.95);
+    border: 1px solid #e2ddd6;
+    border-radius: 2px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 2;
+  }
+  .signature-loading.visible {
+    display: flex;
+  }
+  .signature-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e5e2dc;
+    border-top-color: #bea152;
+    border-radius: 50%;
+    animation: signature-spin 0.8s linear infinite;
+  }
+  .signature-loading-text {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  @keyframes signature-spin {
+    to { transform: rotate(360deg); }
+  }
+  .signature-preview-frame {
+    width: 100%;
+    min-height: 560px;
+    border: 1px solid #e5e2dc;
+    border-radius: 4px;
+    background: #fff;
+    display: block;
+  }
+  .signature-copy-row {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .signature-copy-row .copy-hint {
+    font-size: 13px;
+    color: #555;
+  }
+  .btn-copy {
+    padding: 12px 24px;
+    background: #bea152;
+    color: #0d0d0d;
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .btn-copy:hover {
+    background: #a88b3d;
+    color: #fff;
+  }
+  .btn-copy.copied {
+    background: #2d5c45;
+    color: #b8d4c4;
+    pointer-events: none;
+  }
+
+  /* Multiple matches picker */
+  .match-picker {
+    display: none;
+    margin-top: 12px;
+  }
+  .match-picker.visible { display: block; }
+  .match-picker .picker-label {
+    font-size: 11px;
+    color: #555;
+    margin-bottom: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .match-picker button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    background: #fafaf8;
+    border: 1px solid #e5e2dc;
+    border-radius: 4px;
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 14px;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .match-picker button:hover {
+    border-color: #bea152;
+    background: #faf8f4;
+  }
+
+  /* image slot */
+  .img-slot {
+    border: 1px solid #e5e2dc;
+    border-radius: 6px;
+    background: #fafaf8;
+    padding: 24px;
+    margin: 28px 0;
+  }
+  .img-slot .img-label {
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #8a7a4a;
+    display: block;
+    margin-bottom: 14px;
+  }
+  .img-slot .step-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 4px;
+  }
+
+  /* callout boxes */
+  .tip-box {
+    background: #faf8f4;
+    border-left: 3px solid #bea152;
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 14px;
+    color: #4a4235;
+    display: flex; gap: 14px; align-items: flex-start;
+    font-weight: 400;
+    border-radius: 0 4px 4px 0;
+  }
+  .tip-box .ti { color: #bea152; flex-shrink: 0; font-size: 14px; }
+
+  .warn-box {
+    background: #faf6f2;
+    border-left: 3px solid #b8860b;
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 14px;
+    color: #5c4a2a;
+    display: flex; gap: 14px; align-items: flex-start;
+    font-weight: 400;
+    border-radius: 0 4px 4px 0;
+  }
+  .success-box {
+    background: #f4f9f6;
+    border-left: 3px solid #2d7a52;
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 14px;
+    color: #1e5c3d;
+    display: flex; gap: 14px; align-items: flex-start;
+    font-weight: 400;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* keyboard */
+  kbd {
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    background: #1a1a1a;
+    color: #bea152;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 3px 8px;
+    display: inline-block;
+    letter-spacing: 0.03em;
+  }
+
+  /* sub-steps */
+  .sub-steps { list-style: none; margin: 20px 0; }
+  .sub-steps li {
+    display: flex; gap: 18px; align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid #ebe9e4;
+    font-size: 14px; color: #333; font-weight: 400;
+  }
+  .sub-steps li:last-child { border-bottom: none; }
+  .sub-mark {
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #bea152;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    margin-top: 2px;
+    min-width: 22px;
+    text-align: center;
+  }
+
+  /* ── Name input ── */
+  .name-input-wrap { margin: 32px 0; }
+  .input-label {
+    display: block;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: #6b6b6b;
+    margin-bottom: 14px;
+  }
+  .name-row { display: flex; gap: 12px; align-items: stretch; }
+  #nameInput {
+    flex: 1;
+    padding: 16px 20px;
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 15px; font-weight: 400;
+    background: #fafaf8;
+    border: 1px solid #e0ddd6;
+    border-radius: 4px;
+    outline: none;
+    color: #1a1a1a;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+  #nameInput:focus {
+    border-color: #bea152;
+    box-shadow: 0 0 0 2px rgba(190,161,82,0.15);
+  }
+  #nameInput::placeholder { color: #999; }
+
+  #showSigBtn {
+    padding: 16px 32px;
+    background: transparent;
+    color: #bea152;
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    border: 1px solid #bea152;
+    border-radius: 4px;
+    cursor: pointer; white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  #showSigBtn:hover {
+    background: #bea152;
+    color: #0d0d0d;
+  }
+  #showSigBtn.confirmed {
+    background: #2d5c45;
+    border-color: #2d5c45;
+    color: #b8d4c4;
+  }
+
+  #nameError {
+    display: none;
+    margin-top: 14px;
+    font-size: 13px; color: #8b3a3a;
+    background: #faf5f5;
+    border-left: 3px solid #a04545;
+    padding: 14px 18px;
+    font-weight: 400; letter-spacing: 0.02em;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* ── Nav buttons ── */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid #ebe9e4;
+    gap: 12px;
+  }
+  .btn-next {
+    padding: 14px 36px;
+    background: #bea152;
+    color: #0d0d0d;
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    border: 1px solid #bea152;
+    border-radius: 4px; cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .btn-next:hover { background: #a88b3d; border-color: #a88b3d; color: #fff; }
+  .btn-back {
+    padding: 14px 28px;
+    background: transparent; color: #6b6b6b;
+    font-family: 'Akkurat Regular Pro', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border: 1px solid #d5d2cb;
+    border-radius: 4px; cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-back:hover { border-color: #bea152; color: #1a1a1a; }
+  .btn-invisible { opacity: 0; pointer-events: none; }
+
+  /* ── Help contact card ── */
+  .help-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: #0d0d0d;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin: 32px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .help-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #bea152, transparent);
+  }
+  .help-photo {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 1px solid rgba(190,161,82,0.3);
+    flex-shrink: 0;
+  }
+  .help-eyebrow {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #bea152;
+    margin-bottom: 6px;
+  }
+  .help-name {
+    font-family: 'Miller Banner', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+  }
+  .help-title {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+    margin-bottom: 10px;
+  }
+  .help-email {
+    font-size: 13px;
+    color: #bea152;
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid rgba(190,161,82,0.4);
+    padding-bottom: 2px;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .help-email:hover { border-color: #bea152; color: #e5d4a0; }
+
+  /* ── Footer ── */
+  footer {
+    background: #0d0d0d;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+    padding: 40px 28px;
+    position: relative;
+  }
+  footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 1px;
+    background: rgba(190,161,82,0.5);
+  }
+  .footer-logo {
+    font-family: 'Miller Banner', serif;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  footer p { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 400; letter-spacing: 0.04em; }
+  footer a { color: #bea152; text-decoration: none; }
+  footer a:hover { color: #e5d4a0; }
+
+  @media (max-width: 640px) {
+    header { padding: 40px 24px 36px; }
+    .header-logo { height: 26px; margin-bottom: 20px; }
+    .progress-bar { padding: 0 24px; }
+    .step { padding: 32px 24px; margin-bottom: 20px; }
+    .prog-label { display: none; }
+    .name-row { flex-direction: column; }
+    main { padding: 40px 20px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-video-wrap">
+    <video autoplay muted loop playsinline aria-hidden="true">
+      <source src="bg/EMIR_Particles_HIGH-DEFI_Q125.mp4" type="video/mp4" />
+    </video>
+  </div>
+  <div class="header-inner">
+    <img class="header-logo" src="https://emirintelligence.eme-devops.com/2022/10/emir-logo-white.png" alt="EMIR" />
+    <div class="header-eyebrow">Executive &amp; Delegate Guide</div>
+    <h1>Installing Your<br>EMIR Email Signature<span class="h1-stop">.</span></h1>
+    <p class="header-sub">Set up your signature in Gmail in a few steps</p>
+  </div>
+</header>
+
+<!-- ── PROGRESS ── -->
+<nav class="progress-bar" id="progressBar">
+  <div class="prog-step active" data-step="1" onclick="goToStep(1)">
+    <div class="prog-num">1</div><div class="prog-label">Your Signature</div>
+  </div>
+  <div class="prog-divider" id="div-1"></div>
+  <div class="prog-step" data-step="2" onclick="goToStep(2)">
+    <div class="prog-num">2</div><div class="prog-label">Open Gmail</div>
+  </div>
+  <div class="prog-divider" id="div-2"></div>
+  <div class="prog-step" data-step="3" onclick="goToStep(3)">
+    <div class="prog-num">3</div><div class="prog-label">Find Signature</div>
+  </div>
+  <div class="prog-divider" id="div-3"></div>
+  <div class="prog-step" data-step="4" onclick="goToStep(4)">
+    <div class="prog-num">4</div><div class="prog-label">Paste</div>
+  </div>
+  <div class="prog-divider" id="div-4"></div>
+  <div class="prog-step" data-step="5" onclick="goToStep(5)">
+    <div class="prog-num">5</div><div class="prog-label">Save &amp; Default</div>
+  </div>
+  <div class="prog-divider" id="div-5"></div>
+  <div class="prog-step" data-step="6" onclick="goToStep(6)">
+    <div class="prog-num">6</div><div class="prog-label">Test</div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ── STEP 1 ── -->
+  <section class="step visible" id="step-1">
+    <div class="step-header">
+      <div class="step-badge">Step 01</div>
+      <div class="step-title-wrap">
+        <h2>Find Your Signature</h2>
+        <div class="step-subtitle">Enter your name to load your signature below</div>
+      </div>
+    </div>
+    <div class="step-rule"></div>
+    <div class="step-body">
+      <p>Your EMIR email signature has been prepared for you. Enter your first or full name below and click <strong>Show My Signature</strong>; it will appear in the box for you to select and copy.</p>
+      <div class="name-input-wrap">
+        <label class="input-label" for="nameInput">Your name (first or full)</label>
+        <div class="name-row">
+          <input type="text" id="nameInput" placeholder="e.g. Ricardo or Ricardo Beaumont" autocomplete="off" />
+          <button id="showSigBtn" onclick="showSignature()">Show My Signature</button>
+        </div>
+        <div id="nameError">No signature found for that name. Please check the spelling or contact <strong>mayarzarie@emirintelligence.com</strong> for support.</div>
+        <div class="match-picker" id="matchPicker">
+          <div class="picker-label">Several matches found — select your name:</div>
+          <div id="matchPickerButtons"></div>
+        </div>
+      </div>
+      <div class="signature-preview-wrap" id="signaturePreviewWrap">
+        <span class="preview-label">Your signature</span>
+        <div class="signature-preview-inner">
+          <div class="signature-loading" id="signatureLoading">
+            <div class="signature-loading-spinner"></div>
+            <span class="signature-loading-text">Loading signature…</span>
+          </div>
+          <iframe id="signatureFrame" class="signature-preview-frame" title="Your email signature"></iframe>
+        </div>
+        <div class="signature-copy-row">
+          <span class="copy-hint">Copy your signature to paste into Gmail.</span>
+          <button type="button" class="btn-copy" id="copySigBtn" onclick="copySignature()">Copy to clipboard</button>
+        </div>
+      </div>
+      <div class="tip-box" id="tipAfterLoad" style="display: none;">
+        <span class="ti">—</span>
+        <span>Use the button above to copy your signature, then click <strong>Next Step</strong> to continue with Gmail setup.</span>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back btn-invisible">← Back</button>
+      <button class="btn-next" onclick="next(1)">Next Step →</button>
+    </div>
+  </section>
+
+  <!-- ── STEP 2 ── -->
+  <section class="step" id="step-2">
+    <div class="step-header">
+      <div class="step-badge">Step 02</div>
+      <div class="step-title-wrap">
+        <h2>Open Gmail Settings</h2>
+        <div class="step-subtitle">Access the settings cog in the top-right corner</div>
+      </div>
+    </div>
+    <div class="step-rule"></div>
+    <div class="step-body">
+      <p>Go to your <strong>EMIR Gmail account</strong>. In the top-right corner of the page, click the <strong>⚙ Settings cog icon</strong> — it sits between the question mark and the 3×3 grid of dots.</p>
+      <div class="img-slot">
+        <span class="img-label">Screenshot · Step 02</span>
+        <img class="step-img" src="step-images/step%203.png" alt="Cog icon in Gmail's top-right toolbar" />
+      </div>
+      <p>A panel will appear on the right labelled <strong>"Quick Settings"</strong>. At the top of that panel, click:</p>
+      <div class="tip-box">
+        <span class="ti">—</span>
+        <strong>"See all settings"</strong>
+      </div>
+      <div class="img-slot">
+        <span class="img-label">Screenshot · Step 02b</span>
+        <img class="step-img" src="step-images/step3.1.png" alt="Quick Settings panel with See all settings highlighted" />
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="back(2)">← Back</button>
+      <button class="btn-next" onclick="next(2)">Next Step →</button>
+    </div>
+  </section>
+
+  <!-- ── STEP 3 ── -->
+  <section class="step" id="step-3">
+    <div class="step-header">
+      <div class="step-badge">Step 03</div>
+      <div class="step-title-wrap">
+        <h2>Find the Signature Section</h2>
+        <div class="step-subtitle">Scroll down and clear your existing signature</div>
+      </div>
+    </div>
+    <div class="step-rule"></div>
+    <div class="step-body">
+      <p>The full Settings page will now be open. <strong>Scroll down</strong> until you reach the <strong>Signature</strong> section.</p>
+      <div class="img-slot">
+        <span class="img-label">Screenshot · Step 03</span>
+        <img class="step-img" src="step-images/step-4.png" alt="Gmail Settings scrolled to the Signature section" />
+      </div>
+      <p>You'll see your existing signature in the text field on the right. Before pasting the new one, this field must be emptied completely.</p>
+      <div class="warn-box">
+        <span>!</span>
+        <span>Click inside the signature field, press <kbd>Ctrl + A</kbd> to select all, then press <kbd>Delete</kbd>. Confirm the field is <strong>completely blank</strong> before continuing.</span>
+      </div>
+      <div class="img-slot">
+        <span class="img-label">Screenshot · Step 03b</span>
+        <img class="step-img" src="step-images/step-4.png" alt="Empty signature field" />
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="back(3)">← Back</button>
+      <button class="btn-next" onclick="next(3)">Next Step →</button>
+    </div>
+  </section>
+
+  <!-- ── STEP 4 ── -->
+  <section class="step" id="step-4">
+    <div class="step-header">
+      <div class="step-badge">Step 04</div>
+      <div class="step-title-wrap">
+        <h2>Paste Your New Signature</h2>
+        <div class="step-subtitle">Paste the copied signature into the empty field</div>
+      </div>
+    </div>
+    <div class="step-rule"></div>
+    <div class="step-body">
+      <p>Click inside the empty signature field, then paste using <kbd>Ctrl + V</kbd> (Mac: <kbd>Cmd + V</kbd>) — or right-click and choose <strong>"Paste"</strong>.</p>
+      <div class="success-box">
+        <span>✓</span>
+        <span>Your EMIR signature will appear in the field, exactly as it will look in your emails.</span>
+      </div>
+      <div class="img-slot">
+        <span class="img-label">Screenshot · Step 04</span>
+        <img class="step-img" src="step-images/step-5.png" alt="Signature pasted into the Gmail signature field" />
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="back(4)">← Back</button>
+      <button class="btn-next" onclick="next(4)">Next Step →</button>
+    </div>
+  </section>
+
+  <!-- ── STEP 5 ── -->
+  <section class="step" id="step-5">
+    <div class="step-header">
+      <div class="step-badge">Step 05</div>
+      <div class="step-title-wrap">
+        <h2>Set as Default &amp; Save</h2>
+        <div class="step-subtitle">Apply your signature and save all changes</div>
+      </div>
+    </div>
+    <div class="step-rule"></div>
+    <div class="step-body">
+      <p>Below the signature field you will find <strong>"Signature defaults"</strong>. Set your new signature for both options using the dropdowns:</p>
+      <ul class="sub-steps">
+        <li><div class="sub-mark">1</div><div>Set <strong>"For new emails"</strong> to your new signature.</div></li>
+        <li><div class="sub-mark">2</div><div>Set <strong>"On reply/forward"</strong> to your new signature.</div></li>
+        <li><div class="sub-mark">3</div><div>Scroll to the bottom of the page and click <strong>"Save Changes"</strong>.</div></li>
+      </ul>
+      <div class="img-slot">
+        <span class="img-label">Screenshot · Step 05</span>
+        <img class="step-img" src="step-images/step-6.png" alt="Signature defaults and Save Changes button" />
+      </div>
+      <div class="warn-box">
+        <span>!</span>
+        <span>Do not skip <strong>Save Changes</strong> — without saving, your signature will not be applied.</span>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="back(5)">← Back</button>
+      <button class="btn-next" onclick="next(5)">Next Step →</button>
+    </div>
+  </section>
+
+  <!-- ── STEP 6 ── -->
+  <section class="step" id="step-6">
+    <div class="step-header">
+      <div class="step-badge">Complete</div>
+      <div class="step-title-wrap">
+        <h2>Test Your Signature</h2>
+        <div class="step-subtitle">Send a test email before communicating with clients</div>
+      </div>
+    </div>
+    <div class="step-rule"></div>
+    <div class="step-body">
+      <p>Compose a new email and verify your signature appears correctly at the bottom of the message.</p>
+      <ul class="sub-steps">
+        <li><div class="sub-mark">✓</div><div>Your name and contact details are correct.</div></li>
+        <li><div class="sub-mark">✓</div><div>The EMIR logo and images are loading correctly.</div></li>
+        <li><div class="sub-mark">✓</div><div>Any links within the signature are working.</div></li>
+      </ul>
+      <div class="success-box">
+        <span>✓</span>
+        <span>Your EMIR email signature is live and ready.</span>
+      </div>
+      <div class="help-card">
+        <img class="help-photo" src="https://emirintelligence.eme-devops.com/2024/09/EMIR_MarketingPR_Website_Careers-Profile-Image_Mayar-Zarie_Q32024.png" alt="Mayar Zarie" />
+        <div class="help-info">
+          <div class="help-eyebrow">Need help?</div>
+          <div class="help-name">Mayar Zarie</div>
+          <div class="help-title">Senior Marketing Executive</div>
+          <a class="help-email" href="mailto:mayarzarie@emirintelligence.com">mayarzarie@emirintelligence.com</a>
+        </div>
+      </div>
+      <div class="img-slot">
+        <span class="img-label">Screenshot · Step 06</span>
+        <img class="step-img" src="step-images/step-7.png" alt="Composed Gmail email showing the EMIR signature" />
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="back(6)">← Back</button>
+      <button class="btn-next btn-invisible">—</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-logo">EMIR</div>
+  <p>For support, contact <a href="mailto:mayarzarie@emirintelligence.com">mayarzarie@emirintelligence.com</a></p>
+</footer>
+
+<script>
+  const TOTAL = 6;
+  let current = 1;
+
+  // All staff and senior advisor signatures: { name, path }
+  const SIGNATURES = [
+    { name: "Aamer Sheikh", path: "senior-advisors/EMIR_Email-Signature_Aamer Sheikh_2026.html" },
+    { name: "Aimen Dean", path: "senior-advisors/EMIR_Email-Signature_Aimen Dean_2026.html" },
+    { name: "Alastair Young", path: "senior-advisors/EMIR_Email-Signature_Alastair Young_2026.html" },
+    { name: "Alexis Lecanuet", path: "senior-advisors/EMIR_Email-Signature_Alexis Lecanuet_2026.html" },
+    { name: "Andrew-Staples", path: "staff/EMIR_Email-Signature_Andrew-Staples_2026.html" },
+    { name: "Anthony Dalton", path: "senior-advisors/EMIR_Email-Signature_Anthony Dalton_2026.html" },
+    { name: "Bassel Hindawi", path: "senior-advisors/EMIR_Email-Signature_Bassel Hindawi_2026.html" },
+    { name: "Cassidy Lyon", path: "staff/EMIR_Email-Signature_Cassidy Lyon_2026.html" },
+    { name: "Chaitanya Deo", path: "staff/EMIR_Email-Signature_Chaitanya Deo_2026.html" },
+    { name: "Charles Bamford", path: "senior-advisors/EMIR_Email-Signature_Charles Bamford_2026.html" },
+    { name: "Chetan Choudhury", path: "staff/EMIR_Email-Signature_Chetan Choudhury_2026.html" },
+    { name: "Clark Davies", path: "staff/EMIR_Email-Signature_Clark Davies_2026.html" },
+    { name: "Dominique Boulad", path: "staff/EMIR_Email-Signature_Dominique Boulad_2026.html" },
+    { name: "Donatella Locas", path: "staff/EMIR_Email-Signature_Donatella Locas_2026.html" },
+    { name: "Dr Noah Raford", path: "staff/EMIR_Email-Signature_Dr Noah Raford_2026.html" },
+    { name: "Eithne Treanor", path: "senior-advisors/EMIR_Email-Signature_Eithne Treanor_2026.html" },
+    { name: "Esther O'Callaghan", path: "staff/EMIR_Email-Signature_Esther O'Callaghan_2026.html" },
+    { name: "Greg Sproule", path: "senior-advisors/EMIR_Email-Signature_Greg Sproule_2026.html" },
+    { name: "Herman-Warren", path: "senior-advisors/EMIR_Email-Signature_Herman-Warren_2026.html" },
+    { name: "Honey Sy", path: "staff/EMIR_Email-Signature_Honey Sy_2026.html" },
+    { name: "Jan-David Kohrt", path: "senior-advisors/EMIR_Email-Signature_Jan-David Kohrt_2026.html" },
+    { name: "Karim Ghaleb", path: "staff/EMIR_Email-Signature_Karim Ghaleb_2026.html" },
+    { name: "Karla Dorsch", path: "senior-advisors/EMIR_Email-Signature_Karla Dorsch_2026.html" },
+    { name: "Kay Westmoreland", path: "staff/EMIR_Email-Signature_Kay Westmoreland_2026.html" },
+    { name: "Kay-Westmoreland", path: "staff/EMIR_Email-Signature_Kay-Westmoreland_2026.html" },
+    { name: "Kees Hoving", path: "senior-advisors/EMIR_Email-Signature_Kees Hoving_2026.html" },
+    { name: "Kevin McKenna", path: "senior-advisors/EMIR_Email-Signature_Kevin McKenna_2026.html" },
+    { name: "Khaled El Chidiac", path: "senior-advisors/EMIR_Email-Signature_Khaled El Chidiac_2026.html" },
+    { name: "Leen Abdallah", path: "staff/EMIR_Email-Signature_Leen Abdallah_2026.html" },
+    { name: "Lizzy Johnson", path: "senior-advisors/EMIR_Email-Signature_Lizzy Johnson_2026.html" },
+    { name: "Louise Asare", path: "staff/EMIR_Email-Signature_Louise Asare_2026.html" },
+    { name: "Manal AlBayat", path: "senior-advisors/EMIR_Email-Signature_Manal AlBayat_2026.html" },
+    { name: "Mariam ElEsseily", path: "staff/EMIR_Email-Signature_Mariam ElEsseily_2026.html" },
+    { name: "Massoud Biouki", path: "senior-advisors/EMIR_Email-Signature_Massoud Biouki_2026.html" },
+    { name: "Mayar Zarie", path: "staff/EMIR_Email-Signature_Mayar Zarie_2026.html" },
+    { name: "Menassie Taddese", path: "senior-advisors/EMIR_Email-Signature_Menassie Taddese_2026.html" },
+    { name: "Millicent Drabble", path: "staff/EMIR_Email-Signature_Millicent Drabble_2026.html" },
+    { name: "Nada Mourad", path: "staff/EMIR_Email-Signature_Nada Mourad_2026.html" },
+    { name: "Norm Gilsdorf", path: "senior-advisors/EMIR_Email-Signature_Norm Gilsdorf_2026.html" },
+    { name: "Patrick Samaha", path: "senior-advisors/EMIR_Email-Signature_Patrick Samaha_2026.html" },
+    { name: "Paul Cruickshank", path: "senior-advisors/EMIR_Email-Signature_Paul Cruickshank_2026.html" },
+    { name: "Phillip Cornell", path: "senior-advisors/EMIR_Email-Signature_Phillip Cornell_2026.html" },
+    { name: "Rajesh Garg", path: "senior-advisors/EMIR_Email-Signature_Rajesh Garg_2026.html" },
+    { name: "Ram Dayal", path: "staff/EMIR_Email-Signature_Ram Dayal_2026.html" },
+    { name: "Rana Nawas", path: "senior-advisors/EMIR_Email-Signature_Rana Nawas_2026.html" },
+    { name: "Rashed Kaddoura", path: "staff/EMIR_Email-Signature_Rashed Kaddoura_2026.html" },
+    { name: "Rashed-Kaddoura", path: "staff/EMIR_Email-Signature_Rashed-Kaddoura_2026.html" },
+    { name: "Ray Everett", path: "senior-advisors/EMIR_Email-Signature_Ray Everett_2026.html" },
+    { name: "Reem Assad", path: "senior-advisors/EMIR_Email-Signature_Reem Assad_2026.html" },
+    { name: "Ricardo Beaumont", path: "staff/EMIR_Email-Signature_Ricardo Beaumont_2026.html" },
+    { name: "Robert Hermans", path: "senior-advisors/EMIR_Email-Signature_Robert Hermans_2026.html" },
+    { name: "Roberto Ordonez", path: "senior-advisors/EMIR_Email-Signature_Roberto Ordonez_2026.html" },
+    { name: "Rodrigo Nicolas", path: "staff/EMIR_Email-Signature_Rodrigo Nicolas_2026.html" },
+    { name: "Sachin Bhurase", path: "staff/EMIR_Email-Signature_Sachin Bhurase_2026.html" },
+    { name: "Sandrine El Khodry", path: "senior-advisors/EMIR_Email-Signature_Sandrine El Khodry_2026.html" },
+    { name: "Sanya Suri", path: "staff/EMIR_Email-Signature_Sanya Suri_2026.html" },
+    { name: "Sean Stewart", path: "staff/EMIR_Email-Signature_Sean Stewart_2026.html" },
+    { name: "Simon Clegg", path: "senior-advisors/EMIR_Email-Signature_Simon Clegg_2026.html" },
+    { name: "Simon Coveney", path: "senior-advisors/EMIR_Email-Signature_Simon Coveney_2026.html" },
+    { name: "Simon Penney", path: "senior-advisors/EMIR_Email-Signature_Simon Penney_2026.html" },
+    { name: "Simon Townsend", path: "senior-advisors/EMIR_Email-Signature_Simon Townsend_2026.html" },
+    { name: "Sunil Sinha", path: "senior-advisors/EMIR_Email-Signature_Sunil Sinha_2026.html" },
+    { name: "Tanya Walls", path: "staff/EMIR_Email-Signature_Tanya Walls_2026.html" },
+    { name: "Tarang Gandhi", path: "staff/EMIR_Email-Signature_Tarang Gandhi_2026.html" },
+    { name: "Theresia Jabbour", path: "staff/EMIR_Email-Signature_Theresia Jabbour_2026.html" },
+    { name: "Tim Fox", path: "senior-advisors/EMIR_Email-Signature_Tim Fox_2026.html" },
+    { name: "Trevor McFarlane", path: "staff/EMIR_Email-Signature_Trevor McFarlane_2026.html" },
+    { name: "Vignesh Satyarajan", path: "staff/EMIR_Email-Signature_Vignesh Satyarajan_2026.html" },
+    { name: "Vince Cook", path: "senior-advisors/EMIR_Email-Signature_Vince Cook_2026.html" },
+    { name: "Walid Abukhaled", path: "senior-advisors/EMIR_Email-Signature_Walid Abukhaled_2026.html" },
+    { name: "Walid Abukhaled (Staff)", path: "staff/EMIR_Email-Signature_Walid Abukhaled_2026.html" },
+    { name: "Yasmine Hussein", path: "staff/EMIR_Email-Signature_Yasmine Hussein_2026.html" },
+    { name: "Zainab Kufaishi", path: "senior-advisors/EMIR_Email-Signature_Zainab Kufaishi_2026.html" }
+  ];
+
+  function normalize(s) {
+    return (s || '').toLowerCase().trim().replace(/\s+/g, ' ');
+  }
+
+  function findSignatures(query) {
+    const q = normalize(query);
+    if (!q) return [];
+    const fullMatch = SIGNATURES.filter(function (s) {
+      return normalize(s.name) === q;
+    });
+    if (fullMatch.length) return fullMatch;
+    const firstWord = q.split(/\s+/)[0];
+    const byFirstName = SIGNATURES.filter(function (s) {
+      const first = (s.name.split(/\s+|-/)[0] || '').toLowerCase();
+      return first === firstWord || first.replace(/-/g, '') === firstWord;
+    });
+    if (byFirstName.length) return byFirstName;
+    return SIGNATURES.filter(function (s) {
+      return normalize(s.name).indexOf(q) !== -1 || q.indexOf(normalize(s.name)) !== -1;
+    });
+  }
+
+  var signatureCache = {};
+  var prefetchTimer = null;
+
+  function resetShowButton() {
+    const btn = document.getElementById('showSigBtn');
+    btn.textContent = 'Show My Signature';
+    btn.classList.remove('confirmed');
+  }
+
+  function copySignature() {
+    const frame = document.getElementById('signatureFrame');
+    const btn = document.getElementById('copySigBtn');
+    try {
+      var doc = frame.contentDocument;
+      if (!doc || !doc.body) {
+        btn.textContent = 'Load signature first';
+        return;
+      }
+      var html = doc.body.innerHTML;
+      var plain = doc.body.innerText || '';
+      navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([plain], { type: 'text/plain' })
+        })
+      ]).then(function () {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.textContent = 'Copy to clipboard';
+          btn.classList.remove('copied');
+        }, 2500);
+      }).catch(function () {
+        btn.textContent = 'Copy failed';
+      });
+    } catch (e) {
+      btn.textContent = 'Copy failed';
+    }
+  }
+
+  function prefetchSignature(path) {
+    if (signatureCache[path]) return;
+    fetch(path)
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        signatureCache[path] = html;
+      })
+      .catch(function () {});
+  }
+
+  function showSignatureInBox(path) {
+    const wrap = document.getElementById('signaturePreviewWrap');
+    const frame = document.getElementById('signatureFrame');
+    const tip = document.getElementById('tipAfterLoad');
+    const loading = document.getElementById('signatureLoading');
+    const btn = document.getElementById('showSigBtn');
+
+    wrap.classList.add('visible');
+    tip.style.display = 'none';
+    btn.classList.remove('confirmed');
+
+    function showContent(html) {
+      frame.src = 'about:blank';
+      frame.srcdoc = html;
+      loading.classList.remove('visible');
+      tip.style.display = 'flex';
+      btn.textContent = '✓ Signature loaded';
+      btn.classList.add('confirmed');
+    }
+
+    if (signatureCache[path]) {
+      loading.classList.remove('visible');
+      showContent(signatureCache[path]);
+      return;
+    }
+
+    loading.classList.add('visible');
+    btn.textContent = 'Loading…';
+
+    fetch(path)
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        signatureCache[path] = html;
+        showContent(html);
+      })
+      .catch(function () {
+        loading.classList.remove('visible');
+        frame.src = path;
+        btn.textContent = 'Show My Signature';
+        frame.onload = function () {
+          loading.classList.remove('visible');
+          tip.style.display = 'flex';
+          btn.textContent = '✓ Signature loaded';
+          btn.classList.add('confirmed');
+          frame.onload = null;
+        };
+      });
+  }
+
+  function showSignature() {
+    const input = document.getElementById('nameInput');
+    const errorEl = document.getElementById('nameError');
+    const picker = document.getElementById('matchPicker');
+    const pickerButtons = document.getElementById('matchPickerButtons');
+    const query = input.value.trim();
+
+    errorEl.style.display = 'none';
+    picker.classList.remove('visible');
+    pickerButtons.innerHTML = '';
+    input.style.borderColor = '';
+
+    if (!query) {
+      input.style.borderColor = '#804040';
+      input.focus();
+      return;
+    }
+
+    const matches = findSignatures(query);
+    if (matches.length === 0) {
+      errorEl.style.display = 'block';
+      input.focus();
+      return;
+    }
+    if (matches.length === 1) {
+      showSignatureInBox(matches[0].path);
+      input.style.borderColor = '#3a9060';
+      return;
+    }
+    pickerButtons.innerHTML = '';
+    matches.forEach(function (m) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = m.name;
+      btn.onclick = function () {
+        showSignatureInBox(m.path);
+        picker.classList.remove('visible');
+        input.style.borderColor = '#3a9060';
+      };
+      pickerButtons.appendChild(btn);
+    });
+    picker.classList.add('visible');
+  }
+
+  function goToStep(n) {
+    document.getElementById('step-' + current).classList.remove('visible');
+    current = n;
+    var stepEl = document.getElementById('step-' + n);
+    stepEl.classList.add('visible');
+    updateProgress();
+    stepEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function next(from) { if (from < TOTAL) goToStep(from + 1); }
+  function back(from) { if (from > 1) goToStep(from - 1); }
+
+  function updateProgress() {
+    for (let i = 1; i <= TOTAL; i++) {
+      const el = document.querySelector('.prog-step[data-step="' + i + '"]');
+      const numEl = el.querySelector('.prog-num');
+      el.classList.remove('active', 'done');
+      if (i < current) {
+        el.classList.add('done');
+        numEl.textContent = '✓';
+      } else {
+        numEl.textContent = i;
+        if (i === current) el.classList.add('active');
+      }
+      if (i < TOTAL) {
+        const div = document.getElementById('div-' + i);
+        if (i < current) div.classList.add('done');
+        else div.classList.remove('done');
+      }
+    }
+  }
+
+  document.getElementById('nameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') showSignature();
+  });
+  document.getElementById('nameInput').addEventListener('input', function() {
+    resetShowButton();
+    clearTimeout(prefetchTimer);
+    var query = this.value.trim();
+    if (!query) return;
+    prefetchTimer = setTimeout(function () {
+      var matches = findSignatures(query);
+      if (matches.length === 1) prefetchSignature(matches[0].path);
+    }, 350);
+  });
+</script>
+</body>
+</html>
